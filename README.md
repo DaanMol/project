@@ -40,3 +40,11 @@ Deze website visualiseert de approval rate van elke Amerikaanse president. Je ka
 * Het verzamelen van alle belangrijke gebeurtenissen en deze linken aan stijgingen of dalingen in de approval rate. Dit is erg veel handmatig werk en heeft weinig met programmeren te maken. 
 * Voor elke president belangrijke gebeurtenissen bekijken en categoriseren. Dit wordt vooral lastig gemaakt doordat een presidentiële handeling vaak niet van één categorie is maar van meerdere.
 * Voor elke categorie kijken wat voor invloed het heeft gehad. Bovendien is het nooit duidelijk of een bepaalde handeling de enige factor is die speelde bij een verandering in de approval rate. 
+
+extra interactief html element
+kaart van vs 
+electoral votes?
+gaten in data
+bar chart typen gebeurtenissen
+oorlogen vergelijken
+wikipedia dbp
