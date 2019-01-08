@@ -12,7 +12,7 @@ Er zijn hiernaast ook nog verschillende typen van presidentiële besluiten, zoal
 Vraag: In hoeverre hebben belangrijke politieke gebeurtenissen in de VS tussen 1940 en 2018 invloed gehad op de approval rating van de destijdse president?
 (Mogelijke aanpassing: kijken naar beslissingen van de presidenten op het gebied van oorlogsvoering)
 
-![Project Sketch](https://github.com/DaanMol/project/blob/master/Images/projectsketch.png)
+![Project Sketch](https://github.com/DaanMol/project/blob/master/doc/projectsketch.png)
 
 # Main Features
 
@@ -20,9 +20,11 @@ Vraag: In hoeverre hebben belangrijke politieke gebeurtenissen in de VS tussen 1
 * Tijdlijn van de approval rates. Deze zal per president weergegeven worden met een totaalplaatje boven- of onderin.
 * Klikbare punten op de tijdlijn
 * Beschrijving van en link naar belangrijke gebeurtenissen en beslissingen in de vorm van krantenartikelen of presidentiële speeches of nationale archieven. 
+* Kaart van electoral votes bij verkiezingen
 
 **Optional**
 * Invloed van typen beslissingen op approval rating
+* Verschil in zetels in senaat en congres bij verkiezingen en midterms
 
 # Data sources 
 [The American Presidency Project](https://www.presidency.ucsb.edu/statistics/data/presidential-job-approval)
