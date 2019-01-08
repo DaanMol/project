@@ -12,7 +12,7 @@ Er zijn hiernaast ook nog verschillende typen van presidentiële besluiten, zoal
 Vraag: In hoeverre hebben belangrijke politieke gebeurtenissen in de VS tussen 1940 en 2018 invloed gehad op de approval rating van de destijdse president?
 (Mogelijke aanpassing: kijken naar beslissingen van de presidenten op het gebied van oorlogsvoering)
 
-![Project Sketch](https://github.com/DaanMol/project/blob/master/Images/projectsketch.png)
+![Project Sketch](https://github.com/DaanMol/project/blob/master/doc/projectsketch.png)
 
 # Main Features
 
