@@ -21,6 +21,15 @@ def parseApproval(reader):
         approval.update({row["Start Date"]: {"Start": row["Start Date"], "End": row["End Date"],
                                             "Approving": row["Approving"], "Disapproving": row["Disapproving"],
                                             "Unsure": row["Unsure/NoData"]}})
+    if len(approval) == 2786:
+        short_approval = {}
+        counter = 0
+        # print(approval)
+        for date in approval:
+            if counter % 7 == 0:
+                short_approval.update({date: approval[date]})
+            counter += 1
+        return short_approval
     return approval
 
 def parseCongress(reader):
