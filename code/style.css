@@ -2,3 +2,35 @@ html *
 {
    font-family: "Trebuchet MS" !important;
 }
+
+.line {
+    fill: none;
+    stroke: #ffab00;
+    stroke-width: 3;
+}
+
+rect.panel {
+    opacity: 0;
+}
+
+rect.sel {
+    fill: blue;
+    opacity: .1;
+    stroke: red;
+}
+
+.mytooltip {
+  position:absolute;
+  text-align: center;
+  width: 100px;
+  height:auto;
+  background-color: #42BFF4;
+  border-radius: 10px;
+  color: black;
+  padding: 6px 12px;
+  z-index:3;
+}
+
+.mytooltip span {
+    display: block;
+}
