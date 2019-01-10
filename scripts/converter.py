@@ -108,22 +108,22 @@ def json(parsed, name):
 
 if __name__ == '__main__':
 
-    # final = {}
+    final = {}
     finalvotes = {}
 
-    # for president in presidents:
-    #     with open(f"../data/approval/{president}.csv") as file:
-    #         reader = csv.DictReader(file)
-    #         parsed = parseApproval(reader)
-    #         final.update({president: parsed})
-    #
-    # json(final, "presidents")
-    #
-    # seats = {}
-    # with open("../data/seats/congress.csv", encoding='utf-8') as file:
-    #     reader = csv.DictReader(file)
-    #     parsed = parseCongress(reader)
-    #     json(parsed, "congress")
+    for president in presidents:
+        with open(f"../data/approval/{president}.csv") as file:
+            reader = csv.DictReader(file)
+            parsed = parseApproval(reader)
+            final.update({president: parsed})
+
+    json(final, "presidents")
+
+    seats = {}
+    with open("../data/seats/congress.csv", encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        parsed = parseCongress(reader)
+        json(parsed, "congress")
 
     for year in election_years:
         with open(f"../data/votes/{year}.csv", encoding='utf-8') as file:
