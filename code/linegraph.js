@@ -36,6 +36,7 @@ window.onload = function() {
   d3.json("presidents.json").then(function(data) {
     console.log(data)
     drawOpening(data)
+    drawPres(data)
   })
 
   d3.json("congress.json").then(function(data) {
@@ -67,6 +68,7 @@ function drawOpening(data) {
      .attr("transform", "translate(" + margin.left + ",0)")
      .call(d3.axisLeft(yScale));
 
+  // draw x-axis labels
   svg.selectAll("label")
      .data(names)
      .enter()
@@ -75,15 +77,21 @@ function drawOpening(data) {
        return d
      })
      .attr("x", function(d, i) {
-       return xScale(i)
+       return xScale(i) + 5
      })
      .attr("y", height - 5)
 
+ svg.append("g")
+     .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+     .call(d3.axisBottom(xScale));
+
+  // draw the line
   svg.append("path")
     .datum(names)
     .attr("class", "line")
     .attr("d", line);
 
+  // add selection borders
   var rects = svg.selectAll("rect")
                  .data(names)
                  .enter()
@@ -104,7 +112,7 @@ function drawOpening(data) {
                  .style("opacity", "1")
                  .style("display", "block")
        })
-       // keep the tooltip above the mouse when mouse is on bar
+       // keep the tooltip above the mouse when mouse is on selection
        .on("mousemove", function(d) {
           d3.select(this)
           myTool
@@ -147,6 +155,59 @@ function average(data) {
   return averages
 }
 
-function updatePres(userInput) {
+function drawPres(data) {
 
+    var width2 = 900
+    var height2 = 400
+
+    var parseTime = d3.timeParse("%m/%d/%Y");
+    var selection = data["Roosevelt"]
+    var original = Object.keys(selection)
+    var dates = []
+
+    var x = d3.scaleTime().range([margin.left, width2 - margin.right]);
+    var y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
+
+    var valueline = d3.line()
+                      .x(function(d) { return x(selection[d]["Start"]); })
+                      .y(function(d) { return y(selection[d]["Approving"]); });
+
+    var svg2 = d3.selectAll("body")
+                .append("svg")
+                .attr("width", width2)
+                .attr("height", height2);
+
+    // format the data
+    for (date in selection) {
+        selection[date]["Start"] = parseTime(selection[date]["Start"]);
+        dates.push(selection[date]["Start"])
+    };
+
+    x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
+    y.domain([0, 100]);
+
+    svg2.append("path")
+        .data([original])
+        .attr("class", "line")
+        .attr("d", valueline);
+
+    // Add the X Axis
+    svg2.append("g")
+        .attr("transform", "translate(0," + (height2 - margin.bottom) + ")")
+        .call(d3.axisBottom(x));
+
+    // Add the Y Axis
+    svg2.append("g")
+        .attr("class", "yaxis")
+        .attr("transform", "translate(" + margin.left + ",0)")
+        .call(d3.axisLeft(y));
+
+    // add dots on line
+    svg2.selectAll(".dot")
+       .data(original)
+     .enter().append("circle") // Uses the enter().append() method
+       .attr("class", "dot") // Assign a class for styling
+       .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
+       .attr("cy", function(d) { return y(selection[d]["Approving"]) })
+       .attr("r", 5)
 }

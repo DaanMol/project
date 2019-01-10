@@ -24,7 +24,7 @@ rect.sel {
   text-align: center;
   width: 100px;
   height:auto;
-  background-color: #42BFF4;
+  background-color: steelblue;
   border-radius: 10px;
   color: black;
   padding: 6px 12px;
@@ -33,4 +33,9 @@ rect.sel {
 
 .mytooltip span {
     display: block;
+}
+
+.dot {
+    fill: #ffab00;
+    stroke: #fff;
 }
