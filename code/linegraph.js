@@ -17,8 +17,10 @@ var margin = {top: 20, right: 10, bottom: 20, left: 25};
 
 var width = 1500,
     height = 300;
-    width2 = 900
-    height2 = 400
+    width2 = 900;
+    height2 = 400;
+    height3 = 600;
+    width3 = 960;
 
 // create variable for quick svg acces
 var svg = d3.selectAll("body")
@@ -32,11 +34,18 @@ var svg2 = d3.selectAll("body")
             .attr("width", width2)
             .attr("height", height2);
 
+var svg3 = d3.selectAll("body")
+             .append("svg")
+             .attr("width", width3)
+             .attr("height", height3)
+
 var myTool = d3.select("body")
                .append("div")
                .attr("class", "mytooltip")
                .style("opacity", "0")
                .style("display", "none");
+
+var pathing = d3.geoPath();
 
 window.onload = function() {
 
@@ -49,6 +58,12 @@ window.onload = function() {
 
   d3.json("congress.json").then(function(data2) {
     console.log(data2)
+  })
+
+  d3.json("votes.json").then(function(data3) {
+    console.log(data3)
+    window.data3 = data3
+    drawMap(data3)
   })
 }
 
@@ -68,14 +83,18 @@ function formatDate(data) {
 
 function drawOpening(data) {
   var names = Object.keys(data)
+
+  // create x scale for the names
   var xScale = d3.scaleLinear()
                  .domain([0, names.length])
                  .range([margin.left, width - margin.right]);
 
+  // create yscale for approval rating
   var yScale = d3.scaleLinear()
                  .domain([0, 100])
                  .range([height - margin.bottom, 0 + margin.top]);
 
+  // create line function
   var line = d3.line()
                .x(function(d, i) { return xScale(i) + ((xScale(2) - xScale(1))/2); })
                .y(function(d) { return yScale(points[d]); })
@@ -103,7 +122,8 @@ function drawOpening(data) {
      })
      .attr("y", height - 5)
 
- svg.append("g")
+  // call x scale
+  svg.append("g")
      .attr("transform", "translate(0," + (height - margin.bottom) + ")")
      .call(d3.axisBottom(xScale));
 
@@ -119,11 +139,13 @@ function drawOpening(data) {
                  .enter()
                  .append("rect");
 
+  // draw selection panels over the line
   rects.attr("x", function(d, i) { return xScale(i) })
        .attr("y", margin.top)
        .attr("width", (xScale(2) - xScale(1)))
        .attr("height", height - 40)
        .attr("class", "panel")
+       // display tooltip
        .on("mouseover", function(d) {
           d3.select(this)
                .style("cursor", "pointer")
@@ -155,6 +177,7 @@ function drawOpening(data) {
               .style("opacity", "0")
               .style("display", "none")
        })
+       // update the individual chart when clicked
        .on("click", function(d) {
           userInput = d
           updatePres(userInput)
@@ -178,10 +201,13 @@ function average(data) {
 }
 
 function drawPres(data) {
+    /* Draw initial presentation of individual line chart */
 
+    // get selection from data and get the pre-formatted dates
     var selection = data["Roosevelt"]
         original = Object.keys(selection)
 
+    // create the y scale for rating and x scale for dates
     var x = d3.scaleTime().range([margin.left, width2 - margin.right]);
         y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
         valueline = d3.line()
@@ -189,9 +215,11 @@ function drawPres(data) {
                       .y(function(d) { return y(selection[d]["Approving"]); });
 
     // assing the proper domain to the scales
+    // x scale is based on time
     x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
     y.domain([0, 100]);
 
+    // draw the line
     svg2.append("path")
         .data([original])
         .attr("class", "line")
@@ -217,6 +245,13 @@ function drawPres(data) {
        .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
        .attr("r", 5)
+
+   // add title
+   svg2.append("text")
+       .attr("transform", "translate(60,50)")
+       .attr("class", "indTitle")
+       .style("font-size", "25px")
+       .text("Roosevelt")
 }
 
 function updatePres(userInput) {
@@ -235,6 +270,11 @@ function updatePres(userInput) {
     // assing the proper domain to the scales
     x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
     y.domain([0, 100]);
+
+    // update the title
+    svg2.selectAll(".indTitle")
+        .text(userInput)
+        .style("font-size", "25px")
 
     svg2.selectAll(".line")
         .data([original])
@@ -261,6 +301,21 @@ function updatePres(userInput) {
        .transition()
        .duration(500)
        .call(d3.axisLeft(y));
+}
 
-    console.log("update done")
+function drawMap(data3) {
+
+  d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
+
+    svg3.append("g")
+        .attr("class", "states")
+      .selectAll("path")
+      .data(topojson.feature(us, us.objects.states).features)
+      .enter().append("path")
+        .attr("d", pathing);
+
+    svg3.append("path")
+        .attr("class", "state-borders")
+        .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
+  });
 }
