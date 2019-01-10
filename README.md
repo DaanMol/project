@@ -1,6 +1,5 @@
 # The Presidential Cheatsheet
-Programmeerproject van Daan Molleman<br>
-<a href="https://DaanMol.github.io/project/code/page.html">Bekijk hier de website</a>
+Programmeerproject van Daan Molleman
 
 Het doel van dit project is het visualiseren van een tijdlijn met Amerikaanse presidentiële approval rates met klikbare punten in de lijn waar de approval rate stijgt of daalt die men doorverwijst naar een relevante website.
 
