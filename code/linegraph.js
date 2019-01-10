@@ -17,6 +17,8 @@ var margin = {top: 20, right: 10, bottom: 20, left: 25};
 
 var width = 1500,
     height = 300;
+    width2 = 900
+    height2 = 400
 
 // create variable for quick svg acces
 var svg = d3.selectAll("body")
@@ -24,6 +26,11 @@ var svg = d3.selectAll("body")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
+
+var svg2 = d3.selectAll("body")
+            .append("svg")
+            .attr("width", width2)
+            .attr("height", height2);
 
 var myTool = d3.select("body")
                .append("div")
@@ -34,14 +41,29 @@ var myTool = d3.select("body")
 window.onload = function() {
 
   d3.json("presidents.json").then(function(data) {
-    console.log(data)
+    window.data = data
+    formatDate(data)
     drawOpening(data)
     drawPres(data)
   })
 
-  d3.json("congress.json").then(function(data) {
-    console.log(data)
+  d3.json("congress.json").then(function(data2) {
+    console.log(data2)
   })
+}
+
+function formatDate(data) {
+  /* Formats the date to d3 date */
+  // format the dates
+  var parseTime = d3.timeParse("%m/%d/%Y");
+
+  for (name in data) {
+    selection = data[name]
+    for (date in selection) {
+        selection[date]["Start"] = parseTime(selection[date]["Start"]);
+    }
+  };
+
 }
 
 function drawOpening(data) {
@@ -157,32 +179,16 @@ function average(data) {
 
 function drawPres(data) {
 
-    var width2 = 900
-    var height2 = 400
-
-    var parseTime = d3.timeParse("%m/%d/%Y");
     var selection = data["Roosevelt"]
-    var original = Object.keys(selection)
-    var dates = []
+        original = Object.keys(selection)
 
     var x = d3.scaleTime().range([margin.left, width2 - margin.right]);
-    var y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
-
-    var valueline = d3.line()
+        y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
+        valueline = d3.line()
                       .x(function(d) { return x(selection[d]["Start"]); })
                       .y(function(d) { return y(selection[d]["Approving"]); });
 
-    var svg2 = d3.selectAll("body")
-                .append("svg")
-                .attr("width", width2)
-                .attr("height", height2);
-
-    // format the data
-    for (date in selection) {
-        selection[date]["Start"] = parseTime(selection[date]["Start"]);
-        dates.push(selection[date]["Start"])
-    };
-
+    // assing the proper domain to the scales
     x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
     y.domain([0, 100]);
 
@@ -193,6 +199,7 @@ function drawPres(data) {
 
     // Add the X Axis
     svg2.append("g")
+        .attr("class", "xaxis")
         .attr("transform", "translate(0," + (height2 - margin.bottom) + ")")
         .call(d3.axisBottom(x));
 
@@ -205,9 +212,55 @@ function drawPres(data) {
     // add dots on line
     svg2.selectAll(".dot")
        .data(original)
-     .enter().append("circle") // Uses the enter().append() method
-       .attr("class", "dot") // Assign a class for styling
+     .enter().append("circle")
+       .attr("class", "dot")
        .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
        .attr("r", 5)
+}
+
+function updatePres(userInput) {
+    /* Update the individual graph to the selected president */
+
+    var selection = data[userInput]
+        original = Object.keys(selection)
+
+    // assign scales and line functions
+    var x = d3.scaleTime().range([margin.left, width2 - margin.right]);
+        y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
+        valueline = d3.line()
+                      .x(function(d) { return x(selection[d]["Start"]); })
+                      .y(function(d) { return y(selection[d]["Approving"]); });
+
+    // assing the proper domain to the scales
+    x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
+    y.domain([0, 100]);
+
+    svg2.selectAll(".line")
+        .data([original])
+        .transition()
+        .duration(500)
+        .attr("d", valueline)
+
+    svg2.selectAll(".dot")
+       .remove().exit()
+       .data(original)
+       .enter()
+       .append("circle")
+       .attr("class", "dot")
+       .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
+       .attr("cy", function(d) { return y(selection[d]["Approving"]) })
+       .attr("r", 5)
+
+    svg2.selectAll(".xaxis")
+       .transition()
+       .duration(500)
+       .call(d3.axisBottom(x));
+
+    svg2.selectAll(".yaxis")
+       .transition()
+       .duration(500)
+       .call(d3.axisLeft(y));
+
+    console.log("update done")
 }
