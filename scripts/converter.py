@@ -8,8 +8,12 @@ This script converts a csv file to a JSON file
 import json as j
 import csv
 
-presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson", "Nixon", "Ford", \
+presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson", "Nixon", "Ford",
                "Carter", "Raegan", "BushSr", "Clinton", "BushJr", "Obama", "Trump"]
+election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower1952",
+                  "Eisenhower1956", "Kennedy1960", "Johnson1964", "Nixon1968", "Nixon1972",
+                  "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992", "Clinton1996",
+                  "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
 
 def parseApproval(reader):
     """
@@ -21,7 +25,7 @@ def parseApproval(reader):
         approval.update({row["Start Date"]: {"Start": row["Start Date"], "End": row["End Date"],
                                             "Approving": int(row["Approving"]), "Disapproving": int(row["Disapproving"]),
                                             "Unsure": int(row["Unsure/NoData"])}})
-        
+
     if len(approval) == 2786:
         short_approval = {}
         counter = 0
@@ -43,6 +47,57 @@ def parseCongress(reader):
 
     return congress
 
+def parseVotes(reader):
+
+    votes = {}
+    for row in reader:
+        print(row)
+        state = row["\ufeffSTATES"].replace("*", "")
+        print(state)
+        Total = int(row["TOTAL VOTES"].replace(",", ""))
+
+        if row["DemVotes"] == "--":
+            DemVotes = 0
+        else:
+            DemVotes = int(row["DemVotes"].replace(",", ""))
+
+        DemP = float(row["Dem%"].replace("%", ""))
+
+        if row["DemEV"] == "" or "*":
+            DemEV = 0
+        else:
+            DemEV = int(row["DemEV"].replace("*", ""))
+
+        RepVotes = int(row["RepVotes"].replace(",", ""))
+        RepP = float(row["Rep%"].replace("%", ""))
+
+        if row["RepEV"] == "" or "*":
+            RepEV = 0
+        else:
+            RepEV = int(row["RepEV"].replace("*", ""))
+
+        if row["OtherVotes"] == "" or "--":
+            OtherVotes = 0
+        else:
+            OtherVotes = int(row["OtherVotes"].replace(",", ""))
+
+        if row["Other%"] == "":
+            OtherP = 0
+        else:
+            OtherP = float(row["Other%"].replace("%", ""))
+
+        if row["OtherEV"] == "":
+            OtherEV = 0
+        else:
+            OtherEV = int(row["OtherEV"])
+
+        votes.update({state: {"Total": Total, "Democrate Votes": DemVotes, "Democrate %": DemP,
+                     "Democrate EV": DemEV, "Republican Votes": RepVotes, "Republican %": RepP,
+                     "Republican EV": RepEV, "Other Votes": OtherVotes, "Other %": OtherP,
+                     "Other EV": OtherEV}})
+
+    return votes
+
 def json(parsed, name):
     """
     Converts a dictionary to a json file
@@ -53,18 +108,27 @@ def json(parsed, name):
 
 if __name__ == '__main__':
 
-    final = {}
+    # final = {}
+    finalvotes = {}
 
-    for president in presidents:
-        with open(f"../data/approval/{president}.csv") as file:
+    # for president in presidents:
+    #     with open(f"../data/approval/{president}.csv") as file:
+    #         reader = csv.DictReader(file)
+    #         parsed = parseApproval(reader)
+    #         final.update({president: parsed})
+    #
+    # json(final, "presidents")
+    #
+    # seats = {}
+    # with open("../data/seats/congress.csv", encoding='utf-8') as file:
+    #     reader = csv.DictReader(file)
+    #     parsed = parseCongress(reader)
+    #     json(parsed, "congress")
+
+    for year in election_years:
+        with open(f"../data/votes/{year}.csv", encoding='utf-8') as file:
             reader = csv.DictReader(file)
-            parsed = parseApproval(reader)
-            final.update({president: parsed})
+            parsed = parseVotes(reader)
+            finalvotes.update({year: parsed})
 
-    json(final, "presidents")
-
-    seats = {}
-    with open("../data/seats/congress.csv", encoding='utf-8') as file:
-        reader = csv.DictReader(file)
-        parsed = parseCongress(reader)
-        json(parsed, "congress")
+    json(finalvotes, "votes")
