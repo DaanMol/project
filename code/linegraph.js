@@ -12,6 +12,7 @@ d3.select("head").append("title").text("The Presidential cheatsheet")
 d3.select("body").append("h1").text("The Presidential cheatsheet")
                               .attr("class", "head")
 d3.select("body").append("h2").text("Daan Molleman - 11275820")
+d3.select("body").append("h2").text("Clickable timeperiods update graph below")
 
 var margin = {top: 20, right: 10, bottom: 20, left: 25};
 
