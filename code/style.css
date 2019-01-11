@@ -44,7 +44,11 @@ rect.sel {
   fill: black;
 }
 
-.states :hover {
+/* .states :hover {
+  fill: red;
+} */
+
+.stated {
   fill: red;
 }
 

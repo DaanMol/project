@@ -50,6 +50,11 @@ var pathing = d3.geoPath();
 
 window.onload = function() {
 
+  d3.json("codes.json").then(function(data4) {
+    window.data4 = data4
+    console.log(data4)
+  })
+
   d3.json("presidents.json").then(function(data) {
     window.data = data
     formatDate(data)
@@ -313,7 +318,42 @@ function drawMap(data3) {
       .selectAll("path")
       .data(topojson.feature(us, us.objects.states).features)
       .enter().append("path")
-        .attr("d", pathing);
+        .attr("d", pathing)
+        // display tooltip
+        .on("mouseover", function(d) {
+           d3.select(this)
+                .style("cursor", "pointer")
+                .attr("class", "stated")
+                myTool
+                  .transition()
+                  .duration(300)
+                  .style("opacity", "1")
+                  .style("display", "block")
+        })
+        // keep the tooltip above the mouse when mouse is on selection
+        .on("mousemove", function(d) {
+           d3.select(this)
+           myTool
+             .html("<div id='thumbnail'><span>" + data4[d["id"]] + "\n" +
+                   data3["Roosevelt1940"][data4[d["id"]]]["Democrate %"] + "</div>")
+             .style("left", (d3.event.pageX - 60) + "px")
+             .style("top", (d3.event.pageY - 100) + "px")
+        })
+
+        // remove tooltip and restore colour
+        .on("mouseout", function(d, i) {
+           d3.select(this)
+             .style("cursor", "normal")
+             .attr("class", "panel")
+             myTool
+               .transition()
+               .duration(300)
+               .style("opacity", "0")
+               .style("display", "none")
+        })
+        .on("click", function(d) {
+          console.log(data4[d["id"]])
+        })
 
     svg3.append("path")
         .attr("class", "state-borders")
