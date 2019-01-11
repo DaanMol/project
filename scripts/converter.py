@@ -98,6 +98,15 @@ def parseVotes(reader):
 
     return votes
 
+def parseCodes(f):
+    codes = []
+    for i in f:
+        i = i.replace("\n", "").split("|")
+        codes.append({i[0]: i[2]})
+        codes.append({i[2]: i[0]})
+
+    return codes
+
 def json(parsed, name):
     """
     Converts a dictionary to a json file
@@ -132,3 +141,7 @@ if __name__ == '__main__':
             finalvotes.update({year: parsed})
 
     json(finalvotes, "votes")
+
+    f = open("../data/maps/statecodes", "r")
+    parsed = parseCodes(f)
+    json(parsed, "codes")
