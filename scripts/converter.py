@@ -99,11 +99,11 @@ def parseVotes(reader):
     return votes
 
 def parseCodes(f):
-    codes = []
+    codes = {}
     for i in f:
         i = i.replace("\n", "").split("|")
-        codes.append({i[0]: i[2]})
-        codes.append({i[2]: i[0]})
+        codes.update({i[0]: i[2]})
+        codes.update({i[2]: i[0]})
 
     return codes
 
