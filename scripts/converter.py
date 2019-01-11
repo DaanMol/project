@@ -51,9 +51,7 @@ def parseVotes(reader):
 
     votes = {}
     for row in reader:
-        print(row)
         state = row["\ufeffSTATES"].replace("*", "")
-        print(state)
         Total = int(row["TOTAL VOTES"].replace(",", ""))
 
         if row["DemVotes"] == "--":
@@ -63,7 +61,7 @@ def parseVotes(reader):
 
         DemP = float(row["Dem%"].replace("%", ""))
 
-        if row["DemEV"] == "" or "*":
+        if not is_number(row["DemEV"]):
             DemEV = 0
         else:
             DemEV = int(row["DemEV"].replace("*", ""))
@@ -71,7 +69,7 @@ def parseVotes(reader):
         RepVotes = int(row["RepVotes"].replace(",", ""))
         RepP = float(row["Rep%"].replace("%", ""))
 
-        if row["RepEV"] == "" or "*":
+        if not is_number(row["RepEV"]):
             RepEV = 0
         else:
             RepEV = int(row["RepEV"].replace("*", ""))
@@ -86,7 +84,7 @@ def parseVotes(reader):
         else:
             OtherP = float(row["Other%"].replace("%", ""))
 
-        if row["OtherEV"] == "":
+        if not is_number(row["OtherEV"]):
             OtherEV = 0
         else:
             OtherEV = int(row["OtherEV"])
@@ -115,24 +113,31 @@ def json(parsed, name):
     with open(f"{name}.json", "w") as write_file:
         j.dump(parsed, write_file, indent=4)
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 if __name__ == '__main__':
 
-    final = {}
+    # final = {}
     finalvotes = {}
-
-    for president in presidents:
-        with open(f"../data/approval/{president}.csv") as file:
-            reader = csv.DictReader(file)
-            parsed = parseApproval(reader)
-            final.update({president: parsed})
-
-    json(final, "presidents")
-
-    seats = {}
-    with open("../data/seats/congress.csv", encoding='utf-8') as file:
-        reader = csv.DictReader(file)
-        parsed = parseCongress(reader)
-        json(parsed, "congress")
+    #
+    # for president in presidents:
+    #     with open(f"../data/approval/{president}.csv") as file:
+    #         reader = csv.DictReader(file)
+    #         parsed = parseApproval(reader)
+    #         final.update({president: parsed})
+    #
+    # json(final, "presidents")
+    #
+    # seats = {}
+    # with open("../data/seats/congress.csv", encoding='utf-8') as file:
+    #     reader = csv.DictReader(file)
+    #     parsed = parseCongress(reader)
+    #     json(parsed, "congress")
 
     for year in election_years:
         with open(f"../data/votes/{year}.csv", encoding='utf-8') as file:
@@ -141,7 +146,7 @@ if __name__ == '__main__':
             finalvotes.update({year: parsed})
 
     json(finalvotes, "votes")
-
-    f = open("../data/maps/statecodes", "r")
-    parsed = parseCodes(f)
-    json(parsed, "codes")
+    #
+    # f = open("../data/maps/statecodes", "r")
+    # parsed = parseCodes(f)
+    # json(parsed, "codes")
