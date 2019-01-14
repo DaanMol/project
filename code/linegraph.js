@@ -4,9 +4,13 @@
  * Presidential Cheatsheet linegraph
  */
 
- var presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson",
+ presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson",
                    "Nixon", "Ford", "Carter", "Reagan", "BushSr", "Clinton",
                    "BushJr", "Obama", "Trump"]
+election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower1952",
+                  "Eisenhower1956", "Kennedy1960", "Johnson1964", "Nixon1968", "Nixon1972",
+                  "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992", "Clinton1996",
+                  "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
 
 d3.select("head").append("title").text("The Presidential cheatsheet")
 d3.select("body").append("h1").text("The Presidential cheatsheet")
@@ -186,8 +190,14 @@ function drawOpening(data) {
        })
        // update the individual chart when clicked
        .on("click", function(d) {
-          userInput = d
-          updatePres(userInput)
+         var years = []
+         for (election in election_years) {
+           if (election_years[election].includes(d)) {
+             years.push(election_years[election])
+           }
+         }
+          console.log(years)
+          updatePres(d)
        })
 }
 
@@ -342,11 +352,9 @@ function drawMap(data3) {
         .on("mousemove", function(d) {
            d3.select(this)
            myTool
-             .html("<div id='thumbnail'><span>" + data4[d["id"]] + " Democrate EV " +
-                   sel[data4[d["id"]]]["Democrate EV"] +
-                   " Republican EV " + sel[data4[d["id"]]]["Republican EV"] + "</div>")
+             .html("<div id='thumbnail'><span>" + data4[d["id"]] + "</div>")
              .style("left", (d3.event.pageX - 60) + "px")
-             .style("top", (d3.event.pageY - 130) + "px")
+             .style("top", (d3.event.pageY - 60) + "px")
         })
 
         // remove tooltip and restore colour
@@ -375,8 +383,6 @@ function drawMap(data3) {
 function getClass(id, sel) {
 
   if (typeof(sel[data4[id]]) == "undefined") {
-    console.log(sel[data4[id]])
-    console.log(id)
     return "states"
   }
   var dem = sel[data4[id]]["Democrate EV"]
@@ -393,6 +399,8 @@ function getClass(id, sel) {
 
 function drawTip() {
   /* draw the initial tip */
+  svg3.selectAll("#wikitip")
+      .remove()
   wiki = svg3.append("text")
              .attr("x", 1000)
              .attr("y", 100)
@@ -403,27 +411,71 @@ function drawTip() {
 
 function updateTip(state, sel) {
   /* Update the tip displayed when a state is clicked */
-  // console.log(sel[state])
-  console.log(Object.keys(sel[state]))
-  console.log(Object.values(sel[state]))
+
+  var columns = ["Party", "Votes", "Percentage", "Electoral votes"],
+      row1 = ["Democrates", sel[state]["Democrate Votes"], sel[state]["Democrate %"],
+              sel[state]["Democrate EV"]],
+      row2 = ["Republicans", sel[state]["Republican Votes"], sel[state]["Republican %"],
+              sel[state]["Republican EV"]]
+      rows = [row1, row2]
 
   // remove old tip
-  // svg3.selectAll("#wikitip")
-  //     .remove()
+  svg3.selectAll("#wikitip")
+      .remove()
+
+  // state name above table
+  svg3.append("text")
+             .attr("x", 1000)
+             .attr("y", 90)
+             .attr("id", "wikitip")
+             .text(state)
+             .style("font-size", "15px")
+
+
+  var table = svg3.append("foreignObject")
+                  .attr("width", 480)
+                  .attr("height", 100)
+                  .attr("id", "wikitip")
+                  .attr("x", 1000)
+                  .attr("y", 100)
+                  .append("xhtml:body")
+
+  var tabler = table.append("table")
+
+  tabler.append('tr')
+	  .selectAll('th')
+	    .data(columns)
+	    .enter()
+	  .append('th')
+	    .text(function (d) { return d })
+
+  tabler.append("tr")
+    .selectAll("td")
+      .data(row1)
+      .enter()
+      .append("td")
+      .text(function(d) { return d })
+
+  tabler.append("tr")
+    .selectAll("td")
+      .data(row2)
+      .enter()
+      .append("td")
+      .text(function(d) { return d })
+
+  // var tableRows = tbody.selectAll("tr")
+  //                      .data(rows)
+  //                      .enter()
+  //                      .append("tr")
   //
-  table = svg3.append("table")
-  thead = table.append("thead")
-  tbody = table.append("tbody")
-  // // dislpay new tip
-  // svg3.selectAll("#wikitip")
-  //     .data(getTip(tip).split("\n"))
-  //     .enter()
-  //     .append("text")
-  //     .attr("x", 1000)
-  //     .attr("y", function(d, i) { return 100 + (i * 20);})
-  //     .text(function(d) {
-  //       return d;
-  //     })
-  //     .style("font-size", "12px")
-  //     .attr("id", "wikitip")
+  // var cells = tableRows.selectAll("td")
+  //                 .data(function(d, i) {
+  //                   console.log()
+  //                   return rows[i]
+  //                 })
+  //                 .enter()
+  //                 .append("td")
+  //                 .text(function(d) {
+  //                   return d
+  //                 })
 }

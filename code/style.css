@@ -82,3 +82,26 @@ rect.sel {
   fill: yellow;
   stroke: black;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  background-color: #a6b7c4;
+  text-align: left;
+  border: 1px solid #dddddd;
+  padding: 8px;
+}
+
+td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  background-color: #c3d2dd;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
