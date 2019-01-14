@@ -12,8 +12,8 @@ presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson", "Nixon"
                "Carter", "Raegan", "BushSr", "Clinton", "BushJr", "Obama", "Trump"]
 election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower1952",
                   "Eisenhower1956", "Kennedy1960", "Johnson1964", "Nixon1968", "Nixon1972",
-                  "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992", "Clinton1996",
-                  "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
+                  "Carter1976", "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992",
+                  "Clinton1996", "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
 
 def parseApproval(reader):
     """
