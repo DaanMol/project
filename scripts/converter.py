@@ -74,7 +74,7 @@ def parseVotes(reader):
         else:
             RepEV = int(row["RepEV"].replace("*", ""))
 
-        if row["OtherVotes"] == "" or "--":
+        if row["OtherVotes"] == "" or row["OtherVotes"] == "--":
             OtherVotes = 0
         else:
             OtherVotes = int(row["OtherVotes"].replace(",", ""))
