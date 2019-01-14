@@ -83,6 +83,11 @@ rect.sel {
   stroke: black;
 }
 
+.othersel {
+  fill: orange;
+  stroke: black;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

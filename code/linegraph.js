@@ -9,14 +9,21 @@
                    "BushJr", "Obama", "Trump"]
 election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower1952",
                   "Eisenhower1956", "Kennedy1960", "Johnson1964", "Nixon1968", "Nixon1972",
-                  "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992", "Clinton1996",
-                  "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
+                  "Carter1976", "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992",
+                  "Clinton1996", "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
 
 d3.select("head").append("title").text("The Presidential cheatsheet")
 d3.select("body").append("h1").text("The Presidential cheatsheet")
                               .attr("class", "head")
 d3.select("body").append("h2").text("Daan Molleman - 11275820")
-d3.select("body").append("h2").text("Clickable timeperiods update graph below")
+d3.select("body").append("h2").text("Clickable timeperiods update the graph and the map below. \
+                                     Clicking a state will show the statistics for the \
+                                     selected elections. These are selectable in the\
+                                     dropdown menu")
+d3.select("body").append("img")
+                .attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png")
+                .attr("width", "200")
+                .attr("height", "200");
 
 var margin = {top: 20, right: 10, bottom: 20, left: 25};
 
@@ -198,6 +205,8 @@ function drawOpening(data) {
          }
           updatePres(d)
           drawMap(data3, years)
+          drawDrop(years)
+          updateTip(state, sel)
        })
 }
 
@@ -320,10 +329,42 @@ function updatePres(userInput) {
        .call(d3.axisLeft(y));
 }
 
-function drawMap(data3, userSelection) {
+function drawDrop(years) {
+  svg3.select("#dropDown")
+      .remove()
 
-  // var userSelection = "Roosevelt1940"
-  var sel = data3[userSelection[0]]
+  var dropDown = svg3.append("foreignObject")
+                    .attr("width", 480)
+                    .attr("height", 50)
+                    .attr("id", "dropDown")
+                    .attr("x", 1000)
+                    .attr("y", 0)
+                    .append("xhtml:body")
+
+  var selection = dropDown.append("select")
+                          .data(years)
+                          .attr("class", "form-control")
+                          .on("change", function() {
+                            year = d3.select('.form-control').property('value')
+                            drawMap(data3, year, true)
+                            updateTip(state, sel)
+                          })
+
+  var options = selection.selectAll("option")
+                         .data(years)
+                         .enter()
+                         .append("option")
+                           .attr("value", function(d) { return d })
+                           .text(function(d) { return d } )
+}
+
+function drawMap(data3, userSelection, selected=false) {
+
+  if (selected == false) {
+    sel = data3[userSelection[0]]
+  } else {
+    sel = data3[userSelection]
+  }
 
   svg3.selectAll("g")
       .remove()
@@ -374,6 +415,7 @@ function drawMap(data3, userSelection) {
                .style("display", "none")
         })
         .on("click", function(d) {
+          state = data4[d["id"]]
           updateTip(data4[d["id"]], sel)
         })
 
@@ -420,7 +462,8 @@ function updateTip(state, sel) {
               sel[state]["Democrate EV"]],
       row2 = ["Republicans", sel[state]["Republican Votes"], sel[state]["Republican %"],
               sel[state]["Republican EV"]]
-      rows = [row1, row2]
+      row3 = ["Other", sel[state]["Other Votes"], sel[state]["Other %"],
+              sel[state]["Other EV"]]
 
   // remove old tip
   svg3.selectAll("#wikitip")
@@ -431,6 +474,7 @@ function updateTip(state, sel) {
              .attr("x", 1000)
              .attr("y", 90)
              .attr("id", "wikitip")
+             .attr("class", "statTitle")
              .text(state)
              .style("font-size", "15px")
 
@@ -466,19 +510,10 @@ function updateTip(state, sel) {
       .append("td")
       .text(function(d) { return d })
 
-  // var tableRows = tbody.selectAll("tr")
-  //                      .data(rows)
-  //                      .enter()
-  //                      .append("tr")
-  //
-  // var cells = tableRows.selectAll("td")
-  //                 .data(function(d, i) {
-  //                   console.log()
-  //                   return rows[i]
-  //                 })
-  //                 .enter()
-  //                 .append("td")
-  //                 .text(function(d) {
-  //                   return d
-  //                 })
+  tabler.append("tr")
+    .selectAll("td")
+      .data(row3)
+      .enter()
+      .append("td")
+      .text(function(d) { return d })
 }
