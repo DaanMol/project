@@ -69,7 +69,7 @@ def parseVotes(reader):
         RepVotes = int(row["RepVotes"].replace(",", ""))
         RepP = float(row["Rep%"].replace("%", ""))
 
-        if not is_number(row["RepEV"]):
+        if not is_number(row["RepEV"].replace("*", "")):
             RepEV = 0
         else:
             RepEV = int(row["RepEV"].replace("*", ""))
