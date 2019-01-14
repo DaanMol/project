@@ -61,7 +61,7 @@ def parseVotes(reader):
 
         DemP = float(row["Dem%"].replace("%", ""))
 
-        if not is_number(row["DemEV"]):
+        if not is_number(row["DemEV"].replace("*", "")):
             DemEV = 0
         else:
             DemEV = int(row["DemEV"].replace("*", ""))
