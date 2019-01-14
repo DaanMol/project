@@ -21,7 +21,7 @@ var width = 1500,
     width2 = 900;
     height2 = 400;
     height3 = 600;
-    width3 = 960;
+    width3 = 1500;
 
 // create variable for quick svg acces
 var svg = d3.selectAll("body")
@@ -70,6 +70,7 @@ window.onload = function() {
     console.log(data3)
     window.data3 = data3
     drawMap(data3)
+    drawTip()
   })
 }
 
@@ -311,19 +312,26 @@ function updatePres(userInput) {
 
 function drawMap(data3) {
 
+  var userSelection = "Roosevelt1940",
+      sel = data3[userSelection]
+
   d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
 
     svg3.append("g")
-        .attr("class", "states")
       .selectAll("path")
       .data(topojson.feature(us, us.objects.states).features)
       .enter().append("path")
         .attr("d", pathing)
+        .attr("class", function(d) {
+          return getClass(d["id"], sel)
+        })
         // display tooltip
         .on("mouseover", function(d) {
            d3.select(this)
                 .style("cursor", "pointer")
-                .attr("class", "stated")
+                .attr("class", function(d) {
+                  return getClass(d["id"], sel) + "sel"
+                })
                 myTool
                   .transition()
                   .duration(300)
@@ -334,17 +342,20 @@ function drawMap(data3) {
         .on("mousemove", function(d) {
            d3.select(this)
            myTool
-             .html("<div id='thumbnail'><span>" + data4[d["id"]] + "\n" +
-                   data3["Roosevelt1940"][data4[d["id"]]]["Democrate %"] + "</div>")
+             .html("<div id='thumbnail'><span>" + data4[d["id"]] + " Democrate EV " +
+                   sel[data4[d["id"]]]["Democrate EV"] +
+                   " Republican EV " + sel[data4[d["id"]]]["Republican EV"] + "</div>")
              .style("left", (d3.event.pageX - 60) + "px")
-             .style("top", (d3.event.pageY - 100) + "px")
+             .style("top", (d3.event.pageY - 130) + "px")
         })
 
         // remove tooltip and restore colour
         .on("mouseout", function(d, i) {
            d3.select(this)
              .style("cursor", "normal")
-             .attr("class", "panel")
+             .attr("class", function(d) {
+               return getClass(d["id"], sel)
+             })
              myTool
                .transition()
                .duration(300)
@@ -352,11 +363,67 @@ function drawMap(data3) {
                .style("display", "none")
         })
         .on("click", function(d) {
-          console.log(data4[d["id"]])
+          updateTip(data4[d["id"]], sel)
         })
 
     svg3.append("path")
         .attr("class", "state-borders")
         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
   });
+}
+
+function getClass(id, sel) {
+
+  if (typeof(sel[data4[id]]) == "undefined") {
+    console.log(sel[data4[id]])
+    console.log(id)
+    return "states"
+  }
+  var dem = sel[data4[id]]["Democrate EV"]
+  var rep = sel[data4[id]]["Republican EV"]
+
+  if (dem > rep) {
+    return "dem"
+  } else if (rep > dem) {
+    return "rep"
+  } else {
+    return "other"
+  }
+}
+
+function drawTip() {
+  /* draw the initial tip */
+  wiki = svg3.append("text")
+             .attr("x", 1000)
+             .attr("y", 100)
+             .attr("id", "wikitip")
+             .text("Click on a state for more information")
+             .style("font-size", "12px")
+}
+
+function updateTip(state, sel) {
+  /* Update the tip displayed when a state is clicked */
+  // console.log(sel[state])
+  console.log(Object.keys(sel[state]))
+  console.log(Object.values(sel[state]))
+
+  // remove old tip
+  // svg3.selectAll("#wikitip")
+  //     .remove()
+  //
+  table = svg3.append("table")
+  thead = table.append("thead")
+  tbody = table.append("tbody")
+  // // dislpay new tip
+  // svg3.selectAll("#wikitip")
+  //     .data(getTip(tip).split("\n"))
+  //     .enter()
+  //     .append("text")
+  //     .attr("x", 1000)
+  //     .attr("y", function(d, i) { return 100 + (i * 20);})
+  //     .text(function(d) {
+  //       return d;
+  //     })
+  //     .style("font-size", "12px")
+  //     .attr("id", "wikitip")
 }

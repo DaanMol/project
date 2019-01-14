@@ -14,3 +14,15 @@ hover over a president's time period and see the average score. The area lights
 up and a red borders lights up.
 Added an individual line chart for the president's approval rating. Currently
 hardcoded for Roosevelt. Dots in the chart represent the data points.
+
+# day 4
+Thursday
+The individual chart now updates properly and the points move as well.
+Scales update accordingly, title shows selected president.
+Created a map of the USA, without a tooltip.
+
+# day 5
+Friday
+Matched the state id's to their name and vice versa.
+Tooltip works.
+The data in votes.json now properly formatted for democrates and republicans.
