@@ -196,8 +196,8 @@ function drawOpening(data) {
              years.push(election_years[election])
            }
          }
-          console.log(years)
           updatePres(d)
+          drawMap(data3, years)
        })
 }
 
@@ -320,10 +320,13 @@ function updatePres(userInput) {
        .call(d3.axisLeft(y));
 }
 
-function drawMap(data3) {
+function drawMap(data3, userSelection) {
 
-  var userSelection = "Roosevelt1940",
-      sel = data3[userSelection]
+  // var userSelection = "Roosevelt1940"
+  var sel = data3[userSelection[0]]
+
+  svg3.selectAll("g")
+      .remove()
 
   d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
 
