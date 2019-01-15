@@ -203,7 +203,9 @@ function drawOpening(data) {
           updatePres(d)
           drawMap(years)
           drawDrop(years)
-          updateTip(state, sel)
+          if (typeof(state) != "undefined") {
+            updateTip(state, sel)
+          }
        })
 }
 
@@ -522,6 +524,20 @@ function drawTip() {
 function updateTip(state, sel) {
   /* Update the tip displayed when a state is clicked */
 
+  // remove old tip
+  svg3.selectAll("#wikitip")
+      .remove()
+
+  if (typeof(sel[state]) == "undefined") {
+    wiki = svg3.append("text")
+               .attr("x", 1000)
+               .attr("y", 120)
+               .attr("id", "wikitip")
+               .text("There is no data for this state")
+               .style("font-size", "12px");
+    return 1
+  }
+
   var columns = ["Party", "Votes", "Percentage", "Electoral votes"],
       row1 = ["Democrates", sel[state]["Democrate Votes"], sel[state]["Democrate %"],
               sel[state]["Democrate EV"]],
@@ -529,10 +545,6 @@ function updateTip(state, sel) {
               sel[state]["Republican EV"]]
       row3 = ["Other", sel[state]["Other Votes"], sel[state]["Other %"],
               sel[state]["Other EV"]]
-
-  // remove old tip
-  svg3.selectAll("#wikitip")
-      .remove()
 
   // state name above table
   svg3.append("text")
