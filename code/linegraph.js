@@ -296,6 +296,7 @@ function drawPres(data) {
                             updatePres(nextPres())
                             drawMap(getYears(pres))
                             drawDrop(getYears(pres))
+                            updateTip(state, sel)
                           })
 
     svg2.append("text").attr("x", width2 - (margin.right * 5))
@@ -314,6 +315,7 @@ function drawPres(data) {
                            updatePres(prevPres())
                            drawMap(getYears(pres))
                            drawDrop(getYears(pres))
+                           updateTip(state, sel)
                          })
 
     svg2.append("text").attr("x", 2 * margin.left)
