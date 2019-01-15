@@ -288,6 +288,11 @@ function drawPres(data) {
         .text("Roosevelt")
 
     // add button to switch right
+    svg2.append("text").attr("x", width2 - (margin.right * 5))
+                       .attr("y", height2 - (margin.bottom * 2))
+                       .attr("opacity", "1")
+                       .text("Next");
+
     var rightButton = svg2.append("rect")
                           .attr("x", width2 - (margin.right * 6))
                           .attr("y", height2 - (margin.bottom * 3))
@@ -301,10 +306,9 @@ function drawPres(data) {
                             updateTip(state, sel)
                           })
 
-    svg2.append("text").attr("x", width2 - (margin.right * 5))
+    svg2.append("text").attr("x", 2 * margin.left)
                        .attr("y", height2 - (margin.bottom * 2))
-                       .attr("opacity", "1")
-                       .text("Next");
+                       .text("Previous")
 
     // add button to go left
     var leftButton = svg2.append("rect")
@@ -319,10 +323,6 @@ function drawPres(data) {
                            drawDrop(getYears(pres))
                            updateTip(state, sel)
                          })
-
-    svg2.append("text").attr("x", 2 * margin.left)
-                       .attr("y", height2 - (margin.bottom * 2))
-                       .text("Previous")
 }
 
 function nextPres() {
