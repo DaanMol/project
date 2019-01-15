@@ -4,9 +4,9 @@
  * Presidential Cheatsheet linegraph
  */
 
- presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson",
-                   "Nixon", "Ford", "Carter", "Reagan", "BushSr", "Clinton",
-                   "BushJr", "Obama", "Trump"]
+presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson",
+              "Nixon", "Ford", "Carter", "Reagan", "BushSr", "Clinton",
+              "BushJr", "Obama", "Trump"]
 election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower1952",
                   "Eisenhower1956", "Kennedy1960", "Johnson1964", "Nixon1968", "Nixon1972",
                   "Carter1976", "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992",
@@ -16,14 +16,15 @@ d3.select("head").append("title").text("The Presidential cheatsheet")
 d3.select("body").append("h1").text("The Presidential cheatsheet")
                               .attr("class", "head")
 d3.select("body").append("h2").text("Daan Molleman - 11275820")
-d3.select("body").append("h2").text("Clickable timeperiods update the graph and the map below. \
+d3.select("body").append("p").text("Clickable timeperiods update the graph and the map below. \
                                      Clicking a state will show the statistics for the \
                                      selected elections. These are selectable in the\
                                      dropdown menu")
 d3.select("body").append("img")
                 .attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png")
                 .attr("width", "200")
-                .attr("height", "200");
+                .attr("height", "200")
+                .attr("align", "right");
 
 var margin = {top: 20, right: 10, bottom: 20, left: 25};
 
@@ -38,24 +39,24 @@ var width = 1500,
 var svg = d3.selectAll("body")
             .style("background-color", "#d0dce5") //#F8E5D7 // #bac5d1
             .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+              .attr("width", width)
+              .attr("height", height);
 
 var svg2 = d3.selectAll("body")
             .append("svg")
-            .attr("width", width2)
-            .attr("height", height2);
+              .attr("width", width2)
+              .attr("height", height2);
 
 var svg3 = d3.selectAll("body")
              .append("svg")
-             .attr("width", width3)
-             .attr("height", height3)
+              .attr("width", width3)
+              .attr("height", height3)
 
 var myTool = d3.select("body")
                .append("div")
-               .attr("class", "mytooltip")
-               .style("opacity", "0")
-               .style("display", "none");
+                .attr("class", "mytooltip")
+                .style("opacity", "0")
+                .style("display", "none");
 
 var pathing = d3.geoPath();
 
@@ -80,7 +81,7 @@ window.onload = function() {
   d3.json("votes.json").then(function(data3) {
     console.log(data3)
     window.data3 = data3
-    drawMap(data3)
+    drawMap()
     drawTip()
   })
 }
@@ -197,17 +198,23 @@ function drawOpening(data) {
        })
        // update the individual chart when clicked
        .on("click", function(d) {
-         var years = []
-         for (election in election_years) {
-           if (election_years[election].includes(d)) {
-             years.push(election_years[election])
-           }
-         }
+         pres = d
+         var years = getYears(d)
           updatePres(d)
-          drawMap(data3, years)
+          drawMap(years)
           drawDrop(years)
           updateTip(state, sel)
        })
+}
+
+function getYears(name) {
+  var years = []
+  for (election in election_years) {
+    if (election_years[election].includes(name)) {
+      years.push(election_years[election])
+    }
+  }
+  return years
 }
 
 function average(data) {
@@ -216,11 +223,10 @@ function average(data) {
   var averages = {}
   for (name in data) {
     var total = 0
-    var amount = Object.keys(data[name]).length
     for (date in data[name]) {
       total += data[name][date]["Approving"]
     }
-    var avg = total / amount
+    var avg = total / Object.keys(data[name]).length
     averages[name] = avg
   }
   return averages
@@ -228,9 +234,9 @@ function average(data) {
 
 function drawPres(data) {
     /* Draw initial presentation of individual line chart */
-
+    pres = "Roosevelt"
     // get selection from data and get the pre-formatted dates
-    var selection = data["Roosevelt"]
+    var selection = data[pres]
         original = Object.keys(selection)
 
     // create the y scale for rating and x scale for dates
@@ -272,16 +278,62 @@ function drawPres(data) {
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
        .attr("r", 5)
 
-   // add title
-   svg2.append("text")
-       .attr("transform", "translate(60,50)")
-       .attr("class", "indTitle")
-       .style("font-size", "25px")
-       .text("Roosevelt")
+    // add title
+    svg2.append("text")
+        .attr("transform", "translate(60,50)")
+        .attr("class", "indTitle")
+        .style("font-size", "25px")
+        .text("Roosevelt")
+
+    // add button to switch right
+    var rightButton = svg2.append("rect")
+                          .attr("x", width2 - (margin.right * 6))
+                          .attr("y", height2 - (margin.bottom * 3))
+                          .attr("height", 30)
+                          .attr("width", 50)
+                          .attr("class", "button")
+                          .on("click", function() {
+                            updatePres(nextPres())
+                            drawMap(getYears(pres))
+                            drawDrop(getYears(pres))
+                          })
+
+    svg2.append("text").attr("x", width2 - (margin.right * 5))
+                       .attr("y", height2 - (margin.bottom * 2))
+                       .attr("opacity", "1")
+                       .text("Next");
+
+    // add button to go left
+    var leftButton = svg2.append("rect")
+                         .attr("x", 2 * margin.left)
+                         .attr("y", height2 - (margin.bottom *3))
+                         .attr("height", 30)
+                         .attr("width", 50)
+                         .attr("class", "button")
+                         .on("click", function() {
+                           updatePres(prevPres())
+                           drawMap(getYears(pres))
+                           drawDrop(getYears(pres))
+                         })
+
+    svg2.append("text").attr("x", 2 * margin.left)
+                       .attr("y", height2 - (margin.bottom * 2))
+                       .text("Previous")
+}
+
+function nextPres() {
+  var currPres = presidents.indexOf(pres)
+  return presidents[currPres + 1]
+}
+
+function prevPres() {
+  var currPres = presidents.indexOf(pres)
+  return presidents[currPres - 1]
 }
 
 function updatePres(userInput) {
     /* Update the individual graph to the selected president */
+    pres = userInput
 
     var selection = data[userInput]
         original = Object.keys(selection)
@@ -330,35 +382,48 @@ function updatePres(userInput) {
 }
 
 function drawDrop(years) {
+  /* Draws a dropdown menu */
+
   svg3.select("#dropDown")
       .remove()
 
-  var dropDown = svg3.append("foreignObject")
-                    .attr("width", 480)
-                    .attr("height", 50)
-                    .attr("id", "dropDown")
-                    .attr("x", 1000)
-                    .attr("y", 0)
-                    .append("xhtml:body")
+  if (years.length == 0) {
+    svg3.selectAll("#wikitip")
+        .remove()
+    wiki = svg3.append("text")
+               .attr("x", 1000)
+               .attr("y", 100)
+               .attr("id", "dropDown")
+               .text("No elections were held for this President")
+               .style("font-size", "12px")
+  } else {
+    var dropDown = svg3.append("foreignObject")
+                      .attr("width", 480)
+                      .attr("height", 50)
+                      .attr("id", "dropDown")
+                      .attr("x", 1000)
+                      .attr("y", 0)
+                      .append("xhtml:body")
 
-  var selection = dropDown.append("select")
-                          .data(years)
-                          .attr("class", "form-control")
-                          .on("change", function() {
-                            year = d3.select('.form-control').property('value')
-                            drawMap(data3, year, true)
-                            updateTip(state, sel)
-                          })
+    var selection = dropDown.append("select")
+                            .data(years)
+                            .attr("class", "form-control")
+                            .on("change", function() {
+                              year = d3.select('.form-control').property('value');
+                              drawMap(year, true);
+                              updateTip(state, sel);
+                            });
 
-  var options = selection.selectAll("option")
-                         .data(years)
-                         .enter()
-                         .append("option")
-                           .attr("value", function(d) { return d })
-                           .text(function(d) { return d } )
+    var options = selection.selectAll("option")
+                           .data(years)
+                           .enter()
+                           .append("option")
+                             .attr("value", function(d) { return d; })
+                             .text(function(d) { return d; } );
+  }
 }
 
-function drawMap(data3, userSelection, selected=false) {
+function drawMap(userSelection, selected=false) {
 
   if (selected == false) {
     sel = data3[userSelection[0]]
@@ -376,9 +441,7 @@ function drawMap(data3, userSelection, selected=false) {
       .data(topojson.feature(us, us.objects.states).features)
       .enter().append("path")
         .attr("d", pathing)
-        .attr("class", function(d) {
-          return getClass(d["id"], sel)
-        })
+        .attr("class", function(d) { return getClass(d["id"], sel); })
         // display tooltip
         .on("mouseover", function(d) {
            d3.select(this)

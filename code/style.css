@@ -110,3 +110,14 @@ td {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
+
+rect.button {
+  fill: darkblue;
+  opacity: .5;
+  stroke: black;
+  stroke-width: 3;
+}
+
+rect.button:hover{
+  fill:blue;
+}
