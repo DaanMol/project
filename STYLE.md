@@ -16,11 +16,18 @@
 * Gebruik de variabelen met de juiste scope
 
 5.  
-* Wees consequent in indents (1 tab)
+* Wees consequent in indents (1 tab) en puntjes (onder de andere punten)
 
 6.  
 * Maak de class van een block dezelfde as de naam van een block
 * eindig met een semicolon
 
 7.  
-* 
+* Gebruik een ID één keer, classes kunnen vaker gebruikt worden.
+* Gebruik classes voor styling
+
+8.  
+* Wees consequent in enters
+
+9.  
+* Gebruik window.unload
