@@ -210,6 +210,7 @@ function drawOpening(data) {
 }
 
 function getYears(name) {
+  /* Select the election years of the selected president */
   var years = []
   for (election in election_years) {
     if (election_years[election].includes(name)) {
@@ -306,11 +307,11 @@ function drawPres(data) {
                             updateTip(state, sel)
                           })
 
+    // add button to go left
     svg2.append("text").attr("x", 2 * margin.left)
                        .attr("y", height2 - (margin.bottom * 2))
                        .text("Previous")
 
-    // add button to go left
     var leftButton = svg2.append("rect")
                          .attr("x", 2 * margin.left)
                          .attr("y", height2 - (margin.bottom *3))
@@ -326,11 +327,13 @@ function drawPres(data) {
 }
 
 function nextPres() {
+  /* Returns the current presidents' successor */
   var currPres = presidents.indexOf(pres)
   return presidents[currPres + 1]
 }
 
 function prevPres() {
+  /* Returns the current presidents' predecessor */
   var currPres = presidents.indexOf(pres)
   return presidents[currPres - 1]
 }
@@ -358,12 +361,14 @@ function updatePres(userInput) {
         .text(userInput)
         .style("font-size", "25px")
 
+    // draw the line
     svg2.selectAll(".line")
         .data([original])
         .transition()
         .duration(500)
         .attr("d", valueline)
 
+    // draw the dots
     svg2.selectAll(".dot")
        .remove().exit()
        .data(original)
@@ -374,11 +379,13 @@ function updatePres(userInput) {
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
        .attr("r", 5)
 
+    // call the x axis
     svg2.selectAll(".xaxis")
        .transition()
        .duration(500)
        .call(d3.axisBottom(x));
 
+    // call the y axis
     svg2.selectAll(".yaxis")
        .transition()
        .duration(500)
@@ -388,9 +395,11 @@ function updatePres(userInput) {
 function drawDrop(years) {
   /* Draws a dropdown menu */
 
+  // remove old dropdown menu
   svg3.select("#dropDown")
       .remove()
 
+  // send message if a president had no elections
   if (years.length == 0) {
     svg3.selectAll("#wikitip")
         .remove()
@@ -401,6 +410,8 @@ function drawDrop(years) {
                .text("No elections were held for this President")
                .style("font-size", "12px")
   } else {
+
+    // import a foreign html object
     var dropDown = svg3.append("foreignObject")
                       .attr("width", 480)
                       .attr("height", 50)
@@ -409,6 +420,7 @@ function drawDrop(years) {
                       .attr("y", 0)
                       .append("xhtml:body")
 
+    // add the dropdown
     var selection = dropDown.append("select")
                             .data(years)
                             .attr("class", "form-control")
@@ -418,6 +430,7 @@ function drawDrop(years) {
                               updateTip(state, sel);
                             });
 
+    // add all the election years
     var options = selection.selectAll("option")
                            .data(years)
                            .enter()
@@ -428,16 +441,20 @@ function drawDrop(years) {
 }
 
 function drawMap(userSelection, selected=false) {
+  /* Draw a map coloured with the winnin party's colour */
 
+  // if no years are selected, present the first election
   if (selected == false) {
     sel = data3[userSelection[0]]
   } else {
     sel = data3[userSelection]
   }
 
+  // remove old map
   svg3.selectAll("g")
       .remove()
 
+  // import the topojson file
   d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
 
     svg3.append("g")
@@ -481,11 +498,13 @@ function drawMap(userSelection, selected=false) {
                .style("opacity", "0")
                .style("display", "none")
         })
+        // update the tip if a state is clicked
         .on("click", function(d) {
           state = data4[d["id"]]
           updateTip(data4[d["id"]], sel)
         })
 
+    // draw the state borders
     svg3.append("path")
         .attr("class", "state-borders")
         .attr("d", path(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; })));
@@ -493,7 +512,9 @@ function drawMap(userSelection, selected=false) {
 }
 
 function getClass(id, sel) {
+  /* Determine whether a state has more democrate or republican votes */
 
+  // if a state has no votes, give it another colour
   if (typeof(sel[data4[id]]) == "undefined") {
     return "states"
   }
@@ -510,7 +531,7 @@ function getClass(id, sel) {
 }
 
 function drawTip() {
-  /* draw the initial tip */
+  /* draw the initial tip text */
   svg3.selectAll("#wikitip")
       .remove()
   wiki = svg3.append("text")
@@ -528,6 +549,7 @@ function updateTip(state, sel) {
   svg3.selectAll("#wikitip")
       .remove()
 
+  // dislpay error message when a state has no data
   if (typeof(sel[state]) == "undefined") {
     wiki = svg3.append("text")
                .attr("x", 1000)
@@ -538,6 +560,7 @@ function updateTip(state, sel) {
     return 1
   }
 
+  // declare the column and the rows of the table
   var columns = ["Party", "Votes", "Percentage", "Electoral votes"],
       row1 = ["Democrates", sel[state]["Democrate Votes"], sel[state]["Democrate %"],
               sel[state]["Democrate EV"]],
@@ -555,7 +578,7 @@ function updateTip(state, sel) {
              .text(state)
              .style("font-size", "15px")
 
-
+  // import foreign object into html
   var table = svg3.append("foreignObject")
                   .attr("width", 480)
                   .attr("height", 100)
@@ -564,6 +587,7 @@ function updateTip(state, sel) {
                   .attr("y", 100)
                   .append("xhtml:body")
 
+  // add the table and create rows
   var tabler = table.append("table")
 
   tabler.append('tr')
