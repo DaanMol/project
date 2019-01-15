@@ -26,3 +26,12 @@ Friday
 Matched the state id's to their name and vice versa.
 Tooltip works.
 The data in votes.json now properly formatted for democrates and republicans.
+
+# day 6
+Monday
+Added a table to the map of the States, showing the votes, % and EV for each
+party. It updates as another state is selected, another election is selected or
+when another president is selected.
+Added a dropdown menu for multiple elections per president. For president Ford,
+a message is shown that no elections were held, as he was the vice president of
+Nixon, whom was impeached after the Watergate scandal.
