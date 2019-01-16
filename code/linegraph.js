@@ -80,13 +80,14 @@ window.onload = function() {
     formatDate(data)
     drawOpening(data)
     drawPres(data)
+    d3.json("congress.json").then(function(data2) {
+      console.log(data2)
+      congressData = formatYear(data2)
+      drawCongress(congressData)
+    })
   })
 
-  d3.json("congress.json").then(function(data2) {
-    console.log(data2)
-    window.data2 = data2
-    drawCongress()
-  })
+
 
   d3.json("votes.json").then(function(data3) {
     console.log(data3)
@@ -106,8 +107,23 @@ function formatDate(data) {
     for (date in selection) {
         selection[date]["Start"] = parseTime(selection[date]["Start"]);
     }
-  };
+  }
+};
 
+function formatYear(data2) {
+  /* format year to d3 date */
+  var parseYear = d3.timeParse("%m/%d/%Y");
+
+  congressData = []
+  for (year in data2) {
+    rawYear = "01/01/" + (year.split("-")[0])
+    if (Number(year.split("-")[0]) >= 1942) {
+      firstYear = parseYear(rawYear)
+      data2[year].date = firstYear
+      congressData.push(data2[year])
+    }
+  }
+  return congressData
 }
 
 function drawOpening(data) {
@@ -219,6 +235,26 @@ function drawOpening(data) {
        })
 }
 
+function drawCongress(congressData) {
+  /* Draw congress seats in the individual graph */
+  console.log(congressData)
+
+  y = d3.scaleLinear()
+        .domain([0, 435])
+        .range([height2 - margin.bottom, margin.top])
+
+  var seats = svg2.selectAll(".congress")
+                  .data(congressData)
+                  .enter()
+                  .append("rect");
+  console.log(x)
+  seats.data(congressData)
+       .attr("x", function(d) { x(d.date) })
+       .attr("y", function(d) { y(d.Democrats)})
+
+  console.log("this far 2s")
+}
+
 function getYears(name) {
   /* Select the election years of the selected president */
   var years = []
@@ -254,11 +290,11 @@ function drawPres(data) {
         original = Object.keys(selection)
 
     // create the y scale for rating and x scale for dates
-    var x = d3.scaleTime().range([margin.left, width2 - margin.right]);
-        y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
-        valueline = d3.line()
-                      .x(function(d) { return x(selection[d]["Start"]); })
-                      .y(function(d) { return y(selection[d]["Approving"]); });
+    x = d3.scaleTime().range([margin.left, width2 - margin.right]);
+    y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
+    valueline = d3.line()
+                  .x(function(d) { return x(selection[d]["Start"]); })
+                  .y(function(d) { return y(selection[d]["Approving"]); });
 
     // assing the proper domain to the scales
     // x scale is based on time
@@ -294,9 +330,6 @@ function drawPres(data) {
        .on("mouseover", function(d) {
           d3.select(this)
                .style("cursor", "pointer")
-               // .attr("class", function(d) {
-               //   return getClass(d["id"], sel) + "sel"
-               // })
                myTool
                  .transition()
                  .duration(300)
@@ -316,9 +349,6 @@ function drawPres(data) {
        .on("mouseout", function(d, i) {
           d3.select(this)
             .style("cursor", "normal")
-            // .attr("class", function(d) {
-            //   return getClass(d["id"], sel)
-            // })
             myTool
               .transition()
               .duration(300)

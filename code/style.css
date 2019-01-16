@@ -74,6 +74,7 @@ rect.sel {
 .demsel {
   fill: blue;
   stroke: black;
+  stroke-width: 2px;
 }
 
 .rep {
@@ -84,6 +85,7 @@ rect.sel {
 .repsel {
   fill: red;
   stroke: black;
+  stroke-width: 2px;
 }
 
 .other {
