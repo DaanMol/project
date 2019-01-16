@@ -1,6 +1,14 @@
 html *
 {
    font-family: "Trebuchet MS" !important;
+   text-align: center !important;
+   margin: 20 !important;
+}
+
+.paragraph {
+  width:600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .line {
@@ -120,4 +128,10 @@ rect.button {
 
 rect.button:hover{
   fill:blue;
+}
+
+.ribbon {
+  position: fixed;
+  top: 5px;
+  right: 5px;
 }

@@ -13,18 +13,26 @@ election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower195
                   "Clinton1996", "BushJr2000", "BushJr2004", "Obama2008", "Obama2012", "Trump2016"]
 
 d3.select("head").append("title").text("The Presidential cheatsheet")
-d3.select("body").append("h1").text("The Presidential cheatsheet")
-                              .attr("class", "head")
-d3.select("body").append("h2").text("Daan Molleman - 11275820")
-d3.select("body").append("p").text("Clickable timeperiods update the graph and the map below. \
+var titleText = d3.select("body").append("div")
+                                 .style("width", "100%")
+
+titleText.append("h1").text("The Presidential cheatsheet")
+                      .attr("class", "head")
+titleText.append("h2").text("Daan Molleman - 11275820")
+titleText.append("p").text("Clickable timeperiods update the graph and the map below. \
                                      Clicking a state will show the statistics for the \
                                      selected elections. These are selectable in the\
-                                     dropdown menu")
-d3.select("body").append("img")
-                .attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png")
-                .attr("width", "200")
-                .attr("height", "200")
-                .attr("align", "right");
+                                     dropdown menu.")
+                     .attr("class", "paragraph")
+titleText.append("h3").text("The POTUS's approval rating from 1940 through 2018")
+
+d3.select("body").append("div")
+                 .style("position", "relative")
+                 .append("img")
+                 .attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png")
+                 .attr("width", "150")
+                 .attr("height", "150")
+                 .attr("class", "ribbon");
 
 var margin = {top: 20, right: 10, bottom: 20, left: 25};
 
@@ -76,6 +84,8 @@ window.onload = function() {
 
   d3.json("congress.json").then(function(data2) {
     console.log(data2)
+    window.data2 = data2
+    drawCongress()
   })
 
   d3.json("votes.json").then(function(data3) {
@@ -238,6 +248,7 @@ function average(data) {
 function drawPres(data) {
     /* Draw initial presentation of individual line chart */
     pres = "Roosevelt"
+
     // get selection from data and get the pre-formatted dates
     var selection = data[pres]
         original = Object.keys(selection)
@@ -280,13 +291,47 @@ function drawPres(data) {
        .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
        .attr("r", 5)
+       .on("mouseover", function(d) {
+          d3.select(this)
+               .style("cursor", "pointer")
+               // .attr("class", function(d) {
+               //   return getClass(d["id"], sel) + "sel"
+               // })
+               myTool
+                 .transition()
+                 .duration(300)
+                 .style("opacity", "1")
+                 .style("display", "block")
+       })
+       // keep the tooltip above the mouse when mouse is on selection
+       .on("mousemove", function(d) {
+          d3.select(this)
+          myTool
+            .html("<div id='thumbnail'><span>" + selection[d]["Approving"] + "</div>")
+            .style("left", (d3.event.pageX - 50) + "px")
+            .style("top", (d3.event.pageY - 40) + "px")
+       })
+
+       // remove tooltip and restore colour
+       .on("mouseout", function(d, i) {
+          d3.select(this)
+            .style("cursor", "normal")
+            // .attr("class", function(d) {
+            //   return getClass(d["id"], sel)
+            // })
+            myTool
+              .transition()
+              .duration(300)
+              .style("opacity", "0")
+              .style("display", "none")
+       })
 
     // add title
     svg2.append("text")
         .attr("transform", "translate(60,50)")
         .attr("class", "indTitle")
         .style("font-size", "25px")
-        .text("Roosevelt")
+        .text(function() { return "The individual approval rating of president " + pres})
 
     // add button to switch right
     svg2.append("text").attr("x", width2 - (margin.right * 5))
@@ -358,7 +403,7 @@ function updatePres(userInput) {
 
     // update the title
     svg2.selectAll(".indTitle")
-        .text(userInput)
+        .text(function() { return "The individual approval rating of president " + userInput})
         .style("font-size", "25px")
 
     // draw the line
@@ -378,6 +423,40 @@ function updatePres(userInput) {
        .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
        .attr("r", 5)
+       .on("mouseover", function(d) {
+          d3.select(this)
+               .style("cursor", "pointer")
+               // .attr("class", function(d) {
+               //   return getClass(d["id"], sel) + "sel"
+               // })
+               myTool
+                 .transition()
+                 .duration(300)
+                 .style("opacity", "1")
+                 .style("display", "block")
+       })
+       // keep the tooltip above the mouse when mouse is on selection
+       .on("mousemove", function(d) {
+          d3.select(this)
+          myTool
+            .html("<div id='thumbnail'><span>" + selection[d]["Approving"] + "</div>")
+            .style("left", (d3.event.pageX - 50) + "px")
+            .style("top", (d3.event.pageY - 40) + "px")
+       })
+
+       // remove tooltip and restore colour
+       .on("mouseout", function(d, i) {
+          d3.select(this)
+            .style("cursor", "normal")
+            // .attr("class", function(d) {
+            //   return getClass(d["id"], sel)
+            // })
+            myTool
+              .transition()
+              .duration(300)
+              .style("opacity", "0")
+              .style("display", "none")
+       })
 
     // call the x axis
     svg2.selectAll(".xaxis")
