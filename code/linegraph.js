@@ -68,30 +68,24 @@ var myTool = d3.select("body")
 
 var pathing = d3.geoPath();
 
+requests = [d3.json("presidents.json"), d3.json("congress.json"),
+            d3.json("votes.json"), d3.json("codes.json")]
+
 window.onload = function() {
 
-  d3.json("codes.json").then(function(data4) {
-    window.data4 = data4
-  })
+  Promise.all(requests).then(function(response) {
+    console.log(response)
+    data = response[0]
+    data2 = response[1]
+    data3 = response[2]
+    data4 = response[3]
 
-  d3.json("presidents.json").then(function(data) {
-    window.data = data
     formatDate(data)
+    createScales()
+    drawCongress(formatYear(data2))
     drawOpening(data)
     drawPres(data)
-    d3.json("congress.json").then(function(data2) {
-      createScales()
-      congressData = formatYear(data2)
-      drawCongress(congressData)
-    })
-  })
-
-  d3.json("votes.json").then(function(data3) {
-    console.log(data3)
-    window.data3 = data3
-    drawMap()
-    drawTip()
-  })
+  });
 }
 
 function createScales() {
@@ -106,7 +100,6 @@ function createScales() {
   // x scale is based on time
   x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
   y.domain([0, 100]);
-  console.log("scales created")
 }
 
 function formatDate(data) {
@@ -256,97 +249,6 @@ function drawOpening(data) {
        })
 }
 
-function drawCongress(congressData) {
-  /* Draw congress seats in the individual graph */
-  console.log(x)
-
-  yCon = d3.scaleLinear()
-        .domain([0, 435])
-        .range([height2 - margin.bottom, margin.top])
-
-  seats = svg2.append("g")
-
-  var democrateSeats = seats.selectAll(".dembar")
-                  .data(congressData)
-                  .enter()
-                  .append("rect");
-
-  democrateSeats.data(congressData)
-       .attr("x", function(d) {
-         if (x(d.date) > margin.left) {
-           return x(d.date);
-         } else {
-           return margin.left
-         }
-       })
-       .attr("y", function(d) { return yCon(d.Democrats); })
-       .attr("width", function(d) {
-         var congressYears = d3.timeYear.offset(d.date, 2);
-         if (x(d.date) > 0) {
-           return (x(congressYears) - x(d.date))
-         } else {
-           return (x(congressYears) - margin.left)
-         }
-       })
-       .attr("height", function(d) {
-         return height2 - yCon(d.Democrats) - margin.top
-       })
-       .attr("class", "dembar")
-
-    var republicanSeats = seats.selectAll(".repbar")
-                    .data(congressData)
-                    .enter()
-                    .append("rect");
-
-    republicanSeats.data(congressData)
-         .attr("x", function(d) {
-           if (x(d.date) > margin.left) {
-             return x(d.date);
-           } else {
-             return margin.left
-           }
-         })
-         .attr("y", margin.top)
-         .attr("width", function(d) {
-           var congressYears = d3.timeYear.offset(d.date, 2);
-           if (x(d.date) > 0) {
-             return (x(congressYears) - x(d.date))
-           } else {
-             return (x(congressYears) - margin.left)
-           }
-         })
-         .attr("height", function(d) {
-           return yCon(d.Democrats) - margin.top
-         })
-         .attr("class", "repbar")
-}
-
-function getYears(name) {
-  /* Select the election years of the selected president */
-  var years = []
-  for (election in election_years) {
-    if (election_years[election].includes(name)) {
-      years.push(election_years[election])
-    }
-  }
-  return years
-}
-
-function average(data) {
-  /* Calculates average approval rating */
-
-  var averages = {}
-  for (name in data) {
-    var total = 0
-    for (date in data[name]) {
-      total += data[name][date]["Approving"]
-    }
-    var avg = total / Object.keys(data[name]).length
-    averages[name] = avg
-  }
-  return averages
-}
-
 function drawPres(data) {
     /* Draw initial presentation of individual line chart */
     pres = "Roosevelt"
@@ -474,6 +376,96 @@ function drawPres(data) {
                            drawDrop(getYears(pres))
                            updateTip(state, sel)
                          })
+}
+
+function drawCongress(congressData) {
+  /* Draw congress seats in the individual graph */
+
+  yCon = d3.scaleLinear()
+        .domain([0, 435])
+        .range([height2 - margin.bottom, margin.top])
+
+  seats = svg2.append("g")
+
+  var democrateSeats = seats.selectAll(".dembar")
+                  .data(congressData)
+                  .enter()
+                  .append("rect");
+
+  democrateSeats.data(congressData)
+       .attr("x", function(d) {
+         if (x(d.date) > margin.left) {
+           return x(d.date);
+         } else {
+           return margin.left
+         }
+       })
+       .attr("y", function(d) { return yCon(d.Democrats); })
+       .attr("width", function(d) {
+         var congressYears = d3.timeYear.offset(d.date, 2);
+         if (x(d.date) > 0) {
+           return (x(congressYears) - x(d.date))
+         } else {
+           return (x(congressYears) - margin.left)
+         }
+       })
+       .attr("height", function(d) {
+         return height2 - yCon(d.Democrats) - margin.top
+       })
+       .attr("class", "dembar")
+
+    var republicanSeats = seats.selectAll(".repbar")
+                    .data(congressData)
+                    .enter()
+                    .append("rect");
+
+    republicanSeats.data(congressData)
+         .attr("x", function(d) {
+           if (x(d.date) > margin.left) {
+             return x(d.date);
+           } else {
+             return margin.left
+           }
+         })
+         .attr("y", margin.top)
+         .attr("width", function(d) {
+           var congressYears = d3.timeYear.offset(d.date, 2);
+           if (x(d.date) > 0) {
+             return (x(congressYears) - x(d.date))
+           } else {
+             return (x(congressYears) - margin.left)
+           }
+         })
+         .attr("height", function(d) {
+           return yCon(d.Democrats) - margin.top
+         })
+         .attr("class", "repbar")
+}
+
+function getYears(name) {
+  /* Select the election years of the selected president */
+  var years = []
+  for (election in election_years) {
+    if (election_years[election].includes(name)) {
+      years.push(election_years[election])
+    }
+  }
+  return years
+}
+
+function average(data) {
+  /* Calculates average approval rating */
+
+  var averages = {}
+  for (name in data) {
+    var total = 0
+    for (date in data[name]) {
+      total += data[name][date]["Approving"]
+    }
+    var avg = total / Object.keys(data[name]).length
+    averages[name] = avg
+  }
+  return averages
 }
 
 function nextPres() {
