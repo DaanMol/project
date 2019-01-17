@@ -385,12 +385,15 @@ function drawPres(data) {
 function drawCongress(congressData) {
   /* Draw congress seats in the individual graph */
 
+  // create scale for congress seats
   yCon = d3.scaleLinear()
         .domain([0, 435])
         .range([height2 - margin.bottom, margin.top])
 
+  // group the bars
   seats = svg2.append("g")
 
+  // draw the democrate bars
   var democrateSeats = seats.selectAll(".dembar")
                   .data(congressData)
                   .enter()
@@ -418,6 +421,7 @@ function drawCongress(congressData) {
        })
        .attr("class", "dembar")
 
+    // draw the republican bars
     var republicanSeats = seats.selectAll(".repbar")
                     .data(congressData)
                     .enter()
