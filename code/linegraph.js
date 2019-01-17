@@ -356,7 +356,9 @@ function drawPres(data) {
                             updatePres(nextPres())
                             drawMap(getYears(pres))
                             drawDrop(getYears(pres))
-                            updateTip(state, sel)
+                            if (typeof(state) !== "undefined") {
+                              updateTip(state, sel)
+                            }
                           })
 
     // add button to go left
@@ -374,7 +376,9 @@ function drawPres(data) {
                            updatePres(prevPres())
                            drawMap(getYears(pres))
                            drawDrop(getYears(pres))
-                           updateTip(state, sel)
+                           if (typeof(state) !== "undefined") {
+                             updateTip(state, sel)
+                           }
                          })
 }
 
@@ -775,7 +779,7 @@ function updateTip(state, sel) {
       .remove()
 
   // dislpay error message when a state has no data
-  if (typeof(sel[state]) == "undefined") {
+  if ((typeof(sel) != "undefined") && (typeof(sel[state]) == "undefined")) {
     wiki = svg3.append("text")
                .attr("x", 1000)
                .attr("y", 120)
