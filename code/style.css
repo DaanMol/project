@@ -137,3 +137,17 @@ rect.button:hover{
   top: 5px;
   right: 5px;
 }
+
+.dembar {
+  fill: #39386E;
+  opacity: .5;
+  stroke: black;
+  stroke-width: 2px;
+}
+
+.repbar {
+  fill: #B31D31;
+  opacity: .5;
+  stroke: black;
+  stroke-width: 2px;
+}

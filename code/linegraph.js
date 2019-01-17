@@ -72,7 +72,6 @@ window.onload = function() {
 
   d3.json("codes.json").then(function(data4) {
     window.data4 = data4
-    console.log(data4)
   })
 
   d3.json("presidents.json").then(function(data) {
@@ -86,8 +85,6 @@ window.onload = function() {
       drawCongress(congressData)
     })
   })
-
-
 
   d3.json("votes.json").then(function(data3) {
     console.log(data3)
@@ -117,7 +114,7 @@ function formatYear(data2) {
   congressData = []
   for (year in data2) {
     rawYear = "01/01/" + (year.split("-")[0])
-    if (Number(year.split("-")[0]) >= 1942) {
+    if (Number(year.split("-")[0]) >= 1940) {
       firstYear = parseYear(rawYear)
       data2[year].date = firstYear
       congressData.push(data2[year])
@@ -237,22 +234,65 @@ function drawOpening(data) {
 
 function drawCongress(congressData) {
   /* Draw congress seats in the individual graph */
-  console.log(congressData)
 
   y = d3.scaleLinear()
         .domain([0, 435])
         .range([height2 - margin.bottom, margin.top])
 
-  var seats = svg2.selectAll(".congress")
+  var democrateSeats = svg2.selectAll(".dembar")
                   .data(congressData)
                   .enter()
                   .append("rect");
-  console.log(x)
-  seats.data(congressData)
-       .attr("x", function(d) { x(d.date) })
-       .attr("y", function(d) { y(d.Democrats)})
 
-  console.log("this far 2s")
+  democrateSeats.data(congressData)
+       .attr("x", function(d) {
+         if (x(d.date) > margin.left) {
+           return x(d.date);
+         } else {
+           return margin.left
+         }
+         // return x(d.date);
+       })
+       .attr("y", function(d) { return y(d.Democrats); })
+       .attr("width", function(d) {
+         var congressYears = d3.timeYear.offset(d.date, 2);
+         if (x(d.date) > 0) {
+           return (x(congressYears) - x(d.date))
+         } else {
+           return (x(congressYears) - margin.left)
+         }
+       })
+       .attr("height", function(d) {
+         return height2 - y(d.Democrats) - margin.top
+       })
+       .attr("class", "dembar")
+
+    var republicanSeats = svg2.selectAll(".repbar")
+                    .data(congressData)
+                    .enter()
+                    .append("rect");
+
+    republicanSeats.data(congressData)
+         .attr("x", function(d) {
+           if (x(d.date) > margin.left) {
+             return x(d.date);
+           } else {
+             return margin.left
+           }
+         })
+         .attr("y", margin.top)
+         .attr("width", function(d) {
+           var congressYears = d3.timeYear.offset(d.date, 2);
+           if (x(d.date) > 0) {
+             return (x(congressYears) - x(d.date))
+           } else {
+             return (x(congressYears) - margin.left)
+           }
+         })
+         .attr("height", function(d) {
+           return y(d.Democrats) - margin.top
+         })
+         .attr("class", "repbar")
 }
 
 function getYears(name) {
