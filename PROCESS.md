@@ -57,3 +57,4 @@ The bar chart is in front of the line and the buttons, making it impossible
 to navigate using the buttons.
 It works now. I had to format the dates before creating a scale.
 Fixed a bunch of error messages in the console.
+Added comments to new code
