@@ -34,7 +34,7 @@ d3.select("body").append("div")
                  .attr("height", "150")
                  .attr("class", "ribbon");
 
-var margin = {top: 20, right: 10, bottom: 20, left: 25};
+var margin = {top: 20, right: 10, bottom: 20, left: 50};
 
 var width = 1500,
     height = 300;
@@ -80,7 +80,7 @@ window.onload = function() {
     drawOpening(data)
     drawPres(data)
     d3.json("congress.json").then(function(data2) {
-      console.log(data2)
+      createScales()
       congressData = formatYear(data2)
       drawCongress(congressData)
     })
@@ -92,6 +92,21 @@ window.onload = function() {
     drawMap()
     drawTip()
   })
+}
+
+function createScales() {
+  var selection = data["Roosevelt"],
+      original = Object.keys(selection)
+
+  // create the y scale for rating and x scale for dates
+  x = d3.scaleTime().range([margin.left, width2 - margin.right]);
+  y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
+
+  // assing the proper domain to the scales
+  // x scale is based on time
+  x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
+  y.domain([0, 100]);
+  console.log("scales created")
 }
 
 function formatDate(data) {
@@ -150,6 +165,15 @@ function drawOpening(data) {
      .attr("class", "yaxis")
      .attr("transform", "translate(" + margin.left + ",0)")
      .call(d3.axisLeft(yScale));
+
+  // add Y axis label
+  svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Approval rating in %");
 
   // draw x-axis labels
   svg.selectAll("label")
@@ -234,12 +258,15 @@ function drawOpening(data) {
 
 function drawCongress(congressData) {
   /* Draw congress seats in the individual graph */
+  console.log(x)
 
-  y = d3.scaleLinear()
+  yCon = d3.scaleLinear()
         .domain([0, 435])
         .range([height2 - margin.bottom, margin.top])
 
-  var democrateSeats = svg2.selectAll(".dembar")
+  seats = svg2.append("g")
+
+  var democrateSeats = seats.selectAll(".dembar")
                   .data(congressData)
                   .enter()
                   .append("rect");
@@ -251,9 +278,8 @@ function drawCongress(congressData) {
          } else {
            return margin.left
          }
-         // return x(d.date);
        })
-       .attr("y", function(d) { return y(d.Democrats); })
+       .attr("y", function(d) { return yCon(d.Democrats); })
        .attr("width", function(d) {
          var congressYears = d3.timeYear.offset(d.date, 2);
          if (x(d.date) > 0) {
@@ -263,11 +289,11 @@ function drawCongress(congressData) {
          }
        })
        .attr("height", function(d) {
-         return height2 - y(d.Democrats) - margin.top
+         return height2 - yCon(d.Democrats) - margin.top
        })
        .attr("class", "dembar")
 
-    var republicanSeats = svg2.selectAll(".repbar")
+    var republicanSeats = seats.selectAll(".repbar")
                     .data(congressData)
                     .enter()
                     .append("rect");
@@ -290,7 +316,7 @@ function drawCongress(congressData) {
            }
          })
          .attr("height", function(d) {
-           return y(d.Democrats) - margin.top
+           return yCon(d.Democrats) - margin.top
          })
          .attr("class", "repbar")
 }
@@ -358,6 +384,15 @@ function drawPres(data) {
         .attr("class", "yaxis")
         .attr("transform", "translate(" + margin.left + ",0)")
         .call(d3.axisLeft(y));
+
+    // add Y axis label
+    svg2.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0)
+        .attr("x",0 - (height2 / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Approval rating in % and percentage of Congress seats in %");
 
     // add dots on line
     svg2.selectAll(".dot")
@@ -461,11 +496,15 @@ function updatePres(userInput) {
         original = Object.keys(selection)
 
     // assign scales and line functions
-    var x = d3.scaleTime().range([margin.left, width2 - margin.right]);
-        y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
-        valueline = d3.line()
+    x = d3.scaleTime().range([margin.left, width2 - margin.right]);
+    y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
+    valueline = d3.line()
                       .x(function(d) { return x(selection[d]["Start"]); })
                       .y(function(d) { return y(selection[d]["Approving"]); });
+
+    yCon = d3.scaleLinear()
+          .domain([0, 435])
+          .range([height2 - margin.bottom, margin.top])
 
     // assing the proper domain to the scales
     x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
@@ -496,9 +535,6 @@ function updatePres(userInput) {
        .on("mouseover", function(d) {
           d3.select(this)
                .style("cursor", "pointer")
-               // .attr("class", function(d) {
-               //   return getClass(d["id"], sel) + "sel"
-               // })
                myTool
                  .transition()
                  .duration(300)
@@ -518,9 +554,6 @@ function updatePres(userInput) {
        .on("mouseout", function(d, i) {
           d3.select(this)
             .style("cursor", "normal")
-            // .attr("class", function(d) {
-            //   return getClass(d["id"], sel)
-            // })
             myTool
               .transition()
               .duration(300)
@@ -539,6 +572,57 @@ function updatePres(userInput) {
        .transition()
        .duration(500)
        .call(d3.axisLeft(y));
+
+    // update the stacked bars
+    // update the democrates seats
+    svg2.selectAll(".dembar")
+        .transition()
+        .duration(500)
+        .attr("x", function(d) {
+          if (x(d.date) > margin.left) {
+            return x(d.date);
+          } else {
+            return margin.left
+          }
+        })
+        .attr("y", function(d) {
+          return yCon(d.Democrats);
+        })
+        .attr("width", function(d) {
+          var congressYears = d3.timeYear.offset(d.date, 2);
+          if (x(d.date) > 0) {
+            return (x(congressYears) - x(d.date))
+          } else {
+            return (x(congressYears) - margin.left)
+          }
+        })
+        .attr("height", function(d) {
+          return height2 - yCon(d.Democrats) - margin.top
+        })
+
+        // update the republican seats
+        svg2.selectAll(".repbar")
+            .transition()
+            .duration(500)
+            .attr("x", function(d) {
+              if (x(d.date) > margin.left) {
+                return x(d.date);
+              } else {
+                return margin.left
+              }
+            })
+            .attr("y", margin.top)
+            .attr("width", function(d) {
+              var congressYears = d3.timeYear.offset(d.date, 2);
+              if (x(d.date) > 0) {
+                return (x(congressYears) - x(d.date))
+              } else {
+                return (x(congressYears) - margin.left)
+              }
+            })
+            .attr("height", function(d) {
+              return yCon(d.Democrats) - margin.top
+            })
 }
 
 function drawDrop(years) {
