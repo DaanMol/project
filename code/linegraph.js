@@ -74,7 +74,6 @@ requests = [d3.json("presidents.json"), d3.json("congress.json"),
 window.onload = function() {
 
   Promise.all(requests).then(function(response) {
-    console.log(response)
     data = response[0]
     data2 = response[1]
     data3 = response[2]
@@ -590,7 +589,7 @@ function updatePres(userInput) {
         })
         .attr("width", function(d) {
           var congressYears = d3.timeYear.offset(d.date, 2);
-          if (x(d.date) > 0) {
+          if (x(d.date) > margin.left) {
             return (x(congressYears) - x(d.date))
           } else {
             return (x(congressYears) - margin.left)
@@ -614,7 +613,7 @@ function updatePres(userInput) {
             .attr("y", margin.top)
             .attr("width", function(d) {
               var congressYears = d3.timeYear.offset(d.date, 2);
-              if (x(d.date) > 0) {
+              if (x(d.date) > margin.left) {
                 return (x(congressYears) - x(d.date))
               } else {
                 return (x(congressYears) - margin.left)
