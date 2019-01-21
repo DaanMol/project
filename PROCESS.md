@@ -58,3 +58,17 @@ to navigate using the buttons.
 It works now. I had to format the dates before creating a scale.
 Fixed a bunch of error messages in the console.
 Added comments to new code
+
+# day 10
+Friday
+Fixed overlap in the stacked bar chart of congress seats. Had to do something
+with checking wheter they fell out of the graph.
+
+# day 11
+Monday
+Finished collecting key historical events for the individual timeline.
+Converted the data into a json file.
+Imported the file and added the dots on the right date, yet not on the right
+height.
+clicking on the dots adds an image, a short text and a button that opens
+an online article.
