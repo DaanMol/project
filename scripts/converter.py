@@ -9,7 +9,7 @@ import json as j
 import csv
 
 presidents = ["Roosevelt", "Truman", "Eisenhower", "Kennedy", "Johnson", "Nixon", "Ford",
-               "Carter", "Raegan", "BushSr", "Clinton", "BushJr", "Obama", "Trump"]
+               "Carter", "Reagan", "BushSr", "Clinton", "BushJr", "Obama", "Trump"]
 election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower1952",
                   "Eisenhower1956", "Kennedy1960", "Johnson1964", "Nixon1968", "Nixon1972",
                   "Carter1976", "Reagan1980", "Reagan1984", "BushSr1988", "Clinton1992",
@@ -105,6 +105,14 @@ def parseCodes(f):
 
     return codes
 
+def parseDates(f):
+    dates = {}
+    for i in f:
+        dates.update({i["\ufeffDate"]: {"Date" : i["\ufeffDate"], "Title": i["Title"],
+                     "Link": i["Link"], "Image": i["Image"]}})
+
+    return dates
+
 def json(parsed, name):
     """
     Converts a dictionary to a json file
@@ -146,7 +154,17 @@ if __name__ == '__main__':
             finalvotes.update({year: parsed})
 
     json(finalvotes, "votes")
-    
+
     f = open("../data/maps/statecodes", "r")
     parsed = parseCodes(f)
     json(parsed, "codes")
+
+    final_dates = {}
+
+    for president in presidents:
+        with open(f"../data/Dates/{president}.csv", encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            parsed = parseDates(reader)
+            final_dates.update({president: parsed})
+
+    json(final_dates, "dates")
