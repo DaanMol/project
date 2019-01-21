@@ -38,27 +38,37 @@ var margin = {top: 20, right: 10, bottom: 20, left: 50};
 
 var width = 1500,
     height = 300;
-    width2 = 900;
+    width2 = 1000;
     height2 = 400;
     height3 = 600;
     width3 = 1500;
+    width4 = 500;
+    height4 = 400;
 
 // create variable for quick svg acces
 var svg = d3.selectAll("body")
             .style("background-color", "#d0dce5") //#F8E5D7 // #bac5d1
+            .append("div")
             .append("svg")
               .attr("width", width)
               .attr("height", height);
 
-var svg2 = d3.selectAll("body")
-            .append("svg")
+var individual = d3.selectAll("body")
+                   .append("div")
+
+var svg2 = individual.append("svg")
               .attr("width", width2)
               .attr("height", height2);
 
 var svg3 = d3.selectAll("body")
+             .append("div")
              .append("svg")
               .attr("width", width3)
               .attr("height", height3)
+
+var svg4 = individual.append("svg")
+               .attr("width", width4)
+               .attr("height", height4)
 
 var myTool = d3.select("body")
                .append("div")
@@ -69,7 +79,7 @@ var myTool = d3.select("body")
 var pathing = d3.geoPath();
 
 requests = [d3.json("presidents.json"), d3.json("congress.json"),
-            d3.json("votes.json"), d3.json("codes.json")]
+            d3.json("votes.json"), d3.json("codes.json"), d3.json("dates.json")]
 
 window.onload = function() {
 
@@ -78,12 +88,15 @@ window.onload = function() {
     data2 = response[1]
     data3 = response[2]
     data4 = response[3]
+    data5 = response[4]
 
     formatDate(data)
+    formatDates(data5)
     createScales()
     drawCongress(formatYear(data2))
     drawOpening(data)
     drawPres(data)
+    drawDates("Roosevelt")
   });
 }
 
@@ -110,6 +123,17 @@ function formatDate(data) {
     selection = data[name]
     for (date in selection) {
         selection[date]["Start"] = parseTime(selection[date]["Start"]);
+    }
+  }
+};
+
+function formatDates(data) {
+  var parseTime = d3.timeParse("%m/%d/%Y")
+
+  for (name in data) {
+    selection = data[name]
+    for (date in selection) {
+      selection[date]["Date"] = parseTime(selection[date]["Date"])
     }
   }
 };
@@ -253,7 +277,7 @@ function drawPres(data) {
     pres = "Roosevelt"
 
     // get selection from data and get the pre-formatted dates
-    var selection = data[pres]
+    var selection = data[pres],
         original = Object.keys(selection)
 
     // create the y scale for rating and x scale for dates
@@ -302,7 +326,7 @@ function drawPres(data) {
        .attr("class", "dot")
        .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
-       .attr("r", 5)
+       .attr("r", 2)
        .on("mouseover", function(d) {
           d3.select(this)
                .style("cursor", "pointer")
@@ -330,7 +354,7 @@ function drawPres(data) {
               .duration(300)
               .style("opacity", "0")
               .style("display", "none")
-       })
+        })
 
     // add title
     svg2.append("text")
@@ -449,6 +473,118 @@ function drawCongress(congressData) {
          .attr("class", "repbar")
 }
 
+function drawDates(pres) {
+  var events = data5[pres]
+  var approval = data[pres]
+  var eventDates = Object.keys(events)
+  var approvalDates = Object.keys(approval)
+  var datums = []
+
+  for (date in eventDates) {
+    for (datum in approvalDates) {
+      if (eventDates[date] === approvalDates[datum]) {
+        datums.push(eventDates[date])
+      }
+    }
+  }
+
+  // draw the dots
+  svg2.selectAll(".date")
+     .remove().exit()
+     .data(eventDates)
+     .enter()
+     .append("circle")
+     .attr("class", "date")
+     .attr("cx", function(d) {
+       return x(events[d]["Date"]) })
+     .attr("cy", height2 / 2)
+     .attr("r", 5)
+     .on("mouseover", function(d) {
+        d3.select(this)
+             .style("cursor", "pointer")
+             myTool
+               .transition()
+               .duration(300)
+               .style("opacity", "1")
+               .style("display", "block")
+     })
+     // keep the tooltip above the mouse when mouse is on selection
+     .on("mousemove", function(d) {
+        d3.select(this)
+        myTool
+          .html("<div id='thumbnail'><span>" + events[d]["Title"] + "</div>")
+          .style("left", (d3.event.pageX + 20 ) + "px")
+          .style("top", (d3.event.pageY - 40) + "px")
+     })
+
+     // remove tooltip and restore colour
+     .on("mouseout", function(d) {
+        d3.select(this)
+          .style("cursor", "normal")
+          myTool
+            .transition()
+            .duration(300)
+            .style("opacity", "0")
+            .style("display", "none")
+     })
+     .on("click", function(d) {
+       drawEvent(events[d])
+     })
+}
+
+function drawEvent(eventDate) {
+  console.log(eventDate["Image"])
+  svg4.selectAll(".dateImage")
+      .remove()
+  svg4.selectAll(".dateText")
+      .remove()
+  svg4.selectAll(".dateLink")
+      .remove()
+  svg4.selectAll(".eventButton")
+      .remove()
+  svg4.selectAll(".eventLinkText")
+      .remove()
+
+  // add the corresponding image
+  var imgs = svg4.append("image")
+                .attr("xlink:href", eventDate["Image"])
+                .attr("y", margin.top)
+                .attr("x", margin.left)
+                .attr("width", "300")
+                .attr("height", "300")
+                .attr("class", "dateImage");
+
+  // add the title text
+  svg4.append("text")
+      .attr("x", margin.left)
+      .attr("y", 330 + margin.top)
+      .attr("class", "dateText")
+      .text(eventDate["Title"])
+
+  // add text for button
+  svg4.append("text")
+      .attr("x", width4 / 1.5)
+      .attr("y", height4 - margin.bottom)
+      .attr("xlink:href", eventDate["Link"])
+      .attr("class", "eventLinkText")
+      .text("Online article")
+
+  // add button for online article
+  svg4.append("a")
+      .attr("xlink:href", eventDate["Link"])
+      .attr("target", "_blank")
+      .append("rect")
+      .attr("x", width4 / 1.5 - margin.right)
+      .attr("y", height4 - margin.bottom * 2)
+      .attr("width", 100)
+      .attr("height", 30)
+      .attr("class", "eventButton")
+      .on("mouseover", function(d) {
+        d3.select(this)
+          .style("cursor", "pointer")
+      })
+}
+
 function getYears(name) {
   /* Select the election years of the selected president */
   var years = []
@@ -509,6 +645,9 @@ function updatePres(userInput) {
     x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
     y.domain([0, 100]);
 
+    // update the events
+    drawDates(pres)
+
     // update the title
     svg2.selectAll(".indTitle")
         .text(function() { return "The individual approval rating of president " + userInput})
@@ -521,6 +660,18 @@ function updatePres(userInput) {
         .duration(500)
         .attr("d", valueline)
 
+    // call the x axis
+    svg2.selectAll(".xaxis")
+       .transition()
+       .duration(500)
+       .call(d3.axisBottom(x));
+
+    // call the y axis
+    svg2.selectAll(".yaxis")
+       .transition()
+       .duration(500)
+       .call(d3.axisLeft(y));
+
     // draw the dots
     svg2.selectAll(".dot")
        .remove().exit()
@@ -530,7 +681,7 @@ function updatePres(userInput) {
        .attr("class", "dot")
        .attr("cx", function(d, i) { return x(selection[d]["Start"]) })
        .attr("cy", function(d) { return y(selection[d]["Approving"]) })
-       .attr("r", 5)
+       .attr("r", 2)
        .on("mouseover", function(d) {
           d3.select(this)
                .style("cursor", "pointer")
@@ -558,19 +709,7 @@ function updatePres(userInput) {
               .duration(300)
               .style("opacity", "0")
               .style("display", "none")
-       })
-
-    // call the x axis
-    svg2.selectAll(".xaxis")
-       .transition()
-       .duration(500)
-       .call(d3.axisBottom(x));
-
-    // call the y axis
-    svg2.selectAll(".yaxis")
-       .transition()
-       .duration(500)
-       .call(d3.axisLeft(y));
+        })
 
     // update the stacked bars
     // update the democrates seats
