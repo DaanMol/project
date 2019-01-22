@@ -125,7 +125,7 @@ function formatDate(data) {
         selection[date]["Start"] = parseTime(selection[date]["Start"]);
     }
   }
-};
+}
 
 function formatDates(data) {
   var parseTime = d3.timeParse("%m/%d/%Y")
@@ -136,7 +136,7 @@ function formatDates(data) {
       selection[date]["Date"] = parseTime(selection[date]["Date"])
     }
   }
-};
+}
 
 function formatYear(data2) {
   /* format year to d3 date */
@@ -320,7 +320,10 @@ function drawPres(data) {
         .text("Approval rating in % and percentage of Congress seats in %");
 
     // add dots on line
-    svg2.selectAll(".dot")
+    dotGroup = svg2.append("g")
+                   .attr("id", "dotGroup")
+
+    dotGroup.selectAll(".dot")
        .data(original)
      .enter().append("circle")
        .attr("class", "dot")
@@ -533,7 +536,8 @@ function drawDates(pres) {
 }
 
 function drawEvent(eventDate) {
-  console.log(eventDate["Image"])
+  /* Draw an image, title and link when a historical event is clicked */
+
   svg4.selectAll(".dateImage")
       .remove()
   svg4.selectAll(".dateText")
@@ -673,7 +677,8 @@ function updatePres(userInput) {
        .call(d3.axisLeft(y));
 
     // draw the dots
-    svg2.selectAll(".dot")
+    svg2.selectAll("#dotGroup")
+       .selectAll(".dot")
        .remove().exit()
        .data(original)
        .enter()
