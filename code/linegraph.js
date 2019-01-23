@@ -50,6 +50,7 @@ var svg = d3.selectAll("body")
             .style("background-color", "#d0dce5") //#F8E5D7 // #bac5d1
             .append("div")
             .append("svg")
+              .attr("id", "opening")
               .attr("width", width)
               .attr("height", height);
 
@@ -189,6 +190,7 @@ function drawOpening(data) {
       .attr("x",0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
+      .attr("class", "ylabel")
       .text("Approval rating in %");
 
   // draw x-axis labels
@@ -203,10 +205,12 @@ function drawOpening(data) {
        return xScale(i) + 5
      })
      .attr("y", height - 5)
+     .attr("class", "xnames")
 
   // call x scale
   svg.append("g")
      .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+     .attr("class", "xaxis")
      .call(d3.axisBottom(xScale));
 
   // draw the line
@@ -269,7 +273,66 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
+          resizeOpening()
        })
+}
+
+function resizeOpening() {
+
+  // halve the openings height
+  d3.selectAll("#opening")
+    .transition()
+    .duration(700)
+    .attr("height", height / 2)
+
+  var names = Object.keys(data)
+
+  // create x scale for the names
+  var xScale = d3.scaleLinear()
+                 .domain([0, names.length])
+                 .range([margin.left, width - margin.right]);
+
+  // create yscale for approval rating
+  var yScale = d3.scaleLinear()
+                 .domain([0, 100])
+                 .range([(height / 2) - margin.bottom, 0 + margin.top]);
+
+  // create line function
+  var line = d3.line()
+               .x(function(d, i) { return xScale(i) + ((xScale(2) - xScale(1))/2); })
+               .y(function(d) { return yScale(points[d]); })
+               .curve(d3.curveMonotoneX)
+
+  // retrieve list of average rating for each president
+  var points = average(data)
+
+  // resize the line
+  svg.selectAll(".line")
+     .data([names])
+     .transition()
+     .duration(700)
+     .attr("d", line)
+
+  // resize panels
+  svg.selectAll(".panel")
+     .transition()
+     .duration(700)
+     .attr("height", (height / 2) - 40)
+
+  svg.selectAll(".xnames")
+     .transition()
+     .duration(700)
+     .attr("y", (height / 2) - 5)
+
+  svg.selectAll(".yaxis")
+     .transition()
+     .duration(700)
+     .call(d3.axisLeft(yScale))
+
+  svg.selectAll(".ylabel")
+     .transition()
+     .duration(700)
+     .attr("x", 0 - (height / 4))
 }
 
 function drawPres(data) {
