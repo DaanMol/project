@@ -156,8 +156,9 @@ rect.button:hover{
 
 .ribbon {
   position: fixed;
-  top: 5px;
+  top: 55px;
   right: 5px;
+  z-index: 1;
 }
 
 .dembar {
@@ -204,16 +205,16 @@ rect.eventButton:hover {
 }
 
 #openingInfo {
-  left: 69%;
-  top: 30.5%;
+  left: 1050px;
+  top: 225px;
 }
 
 #individualInfo {
-  left: 43.5%;
-  top: 79%
+  left: 950px;
+  top: 600px;
 }
 
 #mapInfo {
-  left: 63%;
-  top: 128.5%;
+  left: 950px;
+  top: 975px;
 }

@@ -584,15 +584,6 @@ function drawDates(pres) {
   var approval = data[pres]
   var eventDates = Object.keys(events)
   var approvalDates = Object.keys(approval)
-  var datums = []
-
-  for (date in eventDates) {
-    for (datum in approvalDates) {
-      if (eventDates[date] === approvalDates[datum]) {
-        datums.push(eventDates[date])
-      }
-    }
-  }
 
   // draw the dots
   svg2.selectAll(".date")
@@ -603,11 +594,16 @@ function drawDates(pres) {
      .attr("class", "date")
      .attr("cx", function(d) {
        return x(events[d]["Date"]) })
-     .attr("cy", height2 / 2)
+     .attr("cy", function(d) {
+       return getHeight(events[d].Date)
+     })
      .attr("r", 5)
      .on("mouseover", function(d) {
         d3.select(this)
              .style("cursor", "pointer")
+             .transition()
+             .duration(300)
+             .attr("r", 8)
              myTool
                .transition()
                .duration(300)
@@ -627,6 +623,9 @@ function drawDates(pres) {
      .on("mouseout", function(d) {
         d3.select(this)
           .style("cursor", "normal")
+          .transition()
+          .duration(300)
+          .attr("r", 5)
           myTool
             .transition()
             .duration(300)
@@ -636,6 +635,37 @@ function drawDates(pres) {
      .on("click", function(d) {
        drawEvent(events[d])
      })
+}
+
+function getHeight(d) {
+  selection = data[pres]
+  points = []
+
+  // get a list of the presidents data
+  for (i in selection) {
+    points.push(selection[i])
+  }
+  points = points.reverse()
+
+  // get the x of the historical evnet
+  x0 = x(d)
+
+  // declare bisecor function
+  bisectDate = d3.bisector(function(d) { return d.Start; }).left;
+
+  // get the index at which the historical event is at
+  i = bisectDate(points, d, 1)
+  console.log(i)
+  d0 = points[i - 1]
+  d1 = points[i]
+
+  if (i >= points.length) {
+    return y(d0.Approving)
+  }
+
+  yHist = y(d0.Approving) + (((x0 - x(d0.Start)) / (x(d1.Start) - x(d0.Start)))
+          * (y(d1.Approving) - y(d0.Approving)))
+  return yHist
 }
 
 function drawEvent(eventDate) {
@@ -721,13 +751,22 @@ function average(data) {
 function nextPres() {
   /* Returns the current presidents' successor */
   var currPres = presidents.indexOf(pres)
-  return presidents[currPres + 1]
+
+  if (currPres == presidents.length - 1) {
+    return presidents[currPres]
+  } else {
+    return presidents[currPres + 1]
+  }
 }
 
 function prevPres() {
   /* Returns the current presidents' predecessor */
   var currPres = presidents.indexOf(pres)
-  return presidents[currPres - 1]
+  if (currPres === 0) {
+    return presidents[currPres]
+  } else {
+    return presidents[currPres - 1]
+  }
 }
 
 function updatePres(userInput) {
@@ -1103,11 +1142,11 @@ function updateTip(state, sel) {
 function drawHelpTip() {
   /* Draw an explanation box next to every visualisation*/
   idList = ["openingInfo", "individualInfo", "mapInfo"]
-  infoList = ["A line chart with the approval rating of a president. Hover over the periods to see the average rating. Clicking a president",
-              "This graph shows the approval rate of the selected president. Hover a point to view the rate and click a red dot to view the historical event.",
+  infoList = ["A line chart with the approval rating of a president. Hover over the periods to see the average rating. Clicking a president shows their individual approval rating and electoral map.",
+              "This graph shows the approval rate of the selected president. Hover a point to view the rate and click a red bar to view the historical event.",
               "The map shows the winning party in each state for the selected election. click a state to see the statistics. Select another election (if any) from the drop down menu."]
 
-
+  // draw the help icons and give them text
   d3.selectAll(".helpMarker")
     .data(idList)
     .enter()
