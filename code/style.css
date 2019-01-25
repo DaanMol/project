@@ -1,7 +1,7 @@
 html *
 {
    font-family: "Trebuchet MS" !important;
-   text-align: left !important;
+   /* text-align: left !important; */
    margin: 20 !important;
 }
 
@@ -44,6 +44,22 @@ rect.sel {
 }
 
 .mytooltip span {
+    display: block;
+}
+
+.help-tip {
+  position:absolute;
+  text-align: center;
+  width: 200px;
+  height:auto;
+  background-color: #595959;
+  border-radius: 10px;
+  color: white;
+  padding: 6px 12px;
+  z-index:3;
+}
+
+.help-tip span {
     display: block;
 }
 
@@ -167,4 +183,37 @@ rect.button:hover{
 
 rect.eventButton:hover {
   fill: blue;
+}
+
+.helpMarker {
+    position: absolute;
+    text-align: center;
+    background-color: #000099;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    line-height: 26px;
+    cursor: default;
+}
+
+.helpMarker:before{
+    content:'?';
+    font-weight: bold;
+    color:#fff;
+}
+
+#openingInfo {
+  left: 69%;
+  top: 30.5%;
+}
+
+#individualInfo {
+  left: 43.5%;
+  top: 79%
+}
+
+#mapInfo {
+  left: 63%;
+  top: 128.5%;
 }

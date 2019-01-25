@@ -15,6 +15,7 @@ election_years = ["Roosevelt1940", "Roosevelt1944", "Truman1948", "Eisenhower195
 d3.select("head").append("title").text("The Presidential cheatsheet")
 var titleText = d3.select("body").append("div")
                                  .style("width", "100%")
+                                 .attr("class", "titleText")
 
 titleText.append("h1").text("The Presidential cheatsheet")
                       .attr("class", "head")
@@ -49,6 +50,7 @@ var width = 1500,
 var svg = d3.selectAll("body")
             .style("background-color", "#d0dce5") //#F8E5D7 // #bac5d1
             .append("div")
+            .attr("class", "Timeline")
             .append("svg")
               .attr("id", "opening")
               .attr("width", width)
@@ -56,6 +58,7 @@ var svg = d3.selectAll("body")
 
 var individual = d3.selectAll("body")
                    .append("div")
+                   .attr("class", "Individual")
 
 var svg2 = individual.append("svg")
               .attr("width", width2)
@@ -63,6 +66,7 @@ var svg2 = individual.append("svg")
 
 var svg3 = d3.selectAll("body")
              .append("div")
+               .attr("class", "USA map")
              .append("svg")
               .attr("width", width3)
               .attr("height", height3)
@@ -76,6 +80,12 @@ var myTool = d3.select("body")
                 .attr("class", "mytooltip")
                 .style("opacity", "0")
                 .style("display", "none");
+
+var helptip = d3.select("body")
+                .append("div")
+                  .attr("class", "help-tip")
+                  .style("opacity", "0")
+                  .style("display", "none")
 
 var pathing = d3.geoPath();
 
@@ -98,6 +108,7 @@ window.onload = function() {
     drawOpening(data)
     drawPres(data)
     drawDates("Roosevelt")
+    drawHelpTip()
   });
 }
 
@@ -158,6 +169,19 @@ function formatYear(data2) {
 function drawOpening(data) {
   var names = Object.keys(data)
 
+  var dateList = []
+  var rateList = []
+  names.forEach(function(i) {
+    Object.keys(data[i]).forEach(function(j) {
+      dateList.push(data[i][j]["Start"])
+      rateList.push(data[i][j]["Approving"])
+    })
+  })
+
+  var x = d3.scaleTime()
+            .domain(d3.extent(dateList))
+            .range([margin.left, width - margin.right]);
+
   // create x scale for the names
   var xScale = d3.scaleLinear()
                  .domain([0, names.length])
@@ -174,8 +198,13 @@ function drawOpening(data) {
                .y(function(d) { return yScale(points[d]); })
                .curve(d3.curveMonotoneX)
 
+  var line2 = d3.line()
+                .x(function(d, i) { return x(dateList[i]) })
+                .y(function(d, i) { return yScale(rateList[i])})
+
+
   // retrieve list of average rating for each president
-  points = average(data)
+  var points = average(data)
 
   // call y-axis ticks
   svg.append("g")
@@ -211,9 +240,14 @@ function drawOpening(data) {
   svg.append("g")
      .attr("transform", "translate(0," + (height - margin.bottom) + ")")
      .attr("class", "xaxis")
-     .call(d3.axisBottom(xScale));
+     .call(d3.axisBottom(x));
 
-  // draw the line
+  // draw the lines
+  // svg.append("path")
+  //    .datum(rateList)
+  //    .attr("class", "line")
+  //    .attr("d", line2)
+
   svg.append("path")
     .datum(names)
     .attr("class", "line")
@@ -273,17 +307,22 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
-          resizeOpening()
+          resizeOpening("small")
        })
 }
 
-function resizeOpening() {
+function resizeOpening(size) {
+
+  // assign selected heights
+  if (size === "small") {
+    var newHeight = height / 2
+  }
 
   // halve the openings height
   d3.selectAll("#opening")
     .transition()
     .duration(700)
-    .attr("height", height / 2)
+    .attr("height", newHeight)
 
   var names = Object.keys(data)
 
@@ -295,7 +334,7 @@ function resizeOpening() {
   // create yscale for approval rating
   var yScale = d3.scaleLinear()
                  .domain([0, 100])
-                 .range([(height / 2) - margin.bottom, 0 + margin.top]);
+                 .range([newHeight - margin.bottom, 0 + margin.top]);
 
   // create line function
   var line = d3.line()
@@ -317,12 +356,13 @@ function resizeOpening() {
   svg.selectAll(".panel")
      .transition()
      .duration(700)
-     .attr("height", (height / 2) - 40)
+     .attr("height", newHeight - 40)
 
+  // relocate the axes
   svg.selectAll(".xnames")
      .transition()
      .duration(700)
-     .attr("y", (height / 2) - 5)
+     .attr("y", newHeight - 5)
 
   svg.selectAll(".yaxis")
      .transition()
@@ -332,7 +372,7 @@ function resizeOpening() {
   svg.selectAll(".ylabel")
      .transition()
      .duration(700)
-     .attr("x", 0 - (height / 4))
+     .attr("x", 0 - (newHeight / 2))
 }
 
 function drawPres(data) {
@@ -891,6 +931,8 @@ function drawMap(userSelection, selected=false) {
 
   // remove old map
   svg3.selectAll("g")
+      .transition()
+      .duration(500)
       .remove()
 
   // import the topojson file
@@ -1056,4 +1098,49 @@ function updateTip(state, sel) {
       .enter()
       .append("td")
       .text(function(d) { return d })
+}
+
+function drawHelpTip() {
+  /* Draw an explanation box next to every visualisation*/
+  idList = ["openingInfo", "individualInfo", "mapInfo"]
+  infoList = ["A line chart with the approval rating of a president. Hover over the periods to see the average rating. Clicking a president",
+              "This graph shows the approval rate of the selected president. Hover a point to view the rate and click a red dot to view the historical event.",
+              "The map shows the winning party in each state for the selected election. click a state to see the statistics. Select another election (if any) from the drop down menu."]
+
+
+  d3.selectAll(".helpMarker")
+    .data(idList)
+    .enter()
+    .append("div")
+    .attr("class", "helpMarker")
+    .attr("id", function(d) {
+      return d;
+    })
+      .on("mouseover", function(d) {
+         d3.select(this)
+              .style("cursor", "pointer")
+              helptip
+                .transition()
+                .duration(300)
+                .style("opacity", "1")
+                .style("display", "block")
+      })
+      .on("mousemove", function(d, i) {
+         d3.select(this)
+         helptip
+           .html("<div id='thumbnail'><span>"+ infoList[i] +"</div>")
+           .style("left", (d3.event.pageX - 100) + "px")
+           .style("top", (d3.event.pageY + 20) + "px")
+      })
+
+      // remove tooltip and restore colour
+      .on("mouseout", function(d, i) {
+         d3.select(this)
+           .style("cursor", "normal")
+           helptip
+             .transition()
+             .duration(300)
+             .style("opacity", "0")
+             .style("display", "none")
+      })
 }
