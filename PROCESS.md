@@ -72,3 +72,25 @@ Imported the file and added the dots on the right date, yet not on the right
 height.
 clicking on the dots adds an image, a short text and a button that opens
 an online article.
+
+# day 12
+Tuesday
+Grouped multiple html elements for better readability and accessability.
+
+# day 12
+Wednesday
+The overall timeline now shrinks when clicked. Still need a method to make it
+the original size again when a button is clicked.
+Now the overall timeline shows the actual approval rates on the correct data,
+though the lines goes from the last date to the first date for each president,
+and then jumps to the last date from the next president.
+
+# day 13
+Thursday
+Started making a help icon for the graphs.
+Hackathon!
+
+# day 14
+Friday
+Made the tooltips for each graph
+Need to make the graphs scale with the computer screen.
