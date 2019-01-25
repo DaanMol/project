@@ -92,5 +92,9 @@ Hackathon!
 
 # day 14
 Friday
-Made the tooltips for each graph
+Made the tooltips for each graph.
+Tried making the historical dates a rectangle in the individual graph, though
+this did not look quite as I wanted to.
 Need to make the graphs scale with the computer screen.
+The points are now on the line in the individual chart. Thanks Jasper!
+Added about page with sources
