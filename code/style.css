@@ -3,6 +3,7 @@ html *
    font-family: "Trebuchet MS" !important;
    /* text-align: left !important; */
    margin: 20 !important;
+   scroll-behavior: smooth;
 }
 
 h1, h2, h3 {

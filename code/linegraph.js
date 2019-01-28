@@ -323,7 +323,7 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
-          // resizeOpening("small")
+          window.scrollTo({ top: 510 });
        })
 }
 
