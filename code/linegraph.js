@@ -171,20 +171,29 @@ function drawOpening(data) {
 
   var dateList = []
   var rateList = []
+  var allDates = []
+
   names.forEach(function(i) {
-    Object.keys(data[i]).forEach(function(j) {
-      dateList.push(data[i][j]["Start"])
-      rateList.push(data[i][j]["Approving"])
+    var dates = []
+    var rates = []
+    Object.keys(data[i]).reverse().forEach(function(j) {
+      dates.push(data[i][j])
+      rates.push(data[i][j]["Start"])
+      allDates.push(data[i][j]["Start"])
     })
+    dateList.push(dates)
+    rateList.push(rates)
   })
 
+  startDates = getFirst(rateList)
+
   var x = d3.scaleTime()
-            .domain(d3.extent(dateList))
+            .domain(d3.extent(allDates))
             .range([margin.left, width - margin.right]);
 
   // create x scale for the names
   var xScale = d3.scaleLinear()
-                 .domain([0, names.length])
+                 .domain(d3.extent(startDates))
                  .range([margin.left, width - margin.right]);
 
   // create yscale for approval rating
@@ -199,8 +208,8 @@ function drawOpening(data) {
                .curve(d3.curveMonotoneX)
 
   var line2 = d3.line()
-                .x(function(d, i) { return x(dateList[i]) })
-                .y(function(d, i) { return yScale(rateList[i])})
+                .x(function(d, i) { return x(d.Start); })
+                .y(function(d, i) { return yScale(d.Approving); })
 
 
   // retrieve list of average rating for each president
@@ -231,9 +240,9 @@ function drawOpening(data) {
        return d
      })
      .attr("x", function(d, i) {
-       return xScale(i) + 5
+       return x(startDates[i]) + 5
      })
-     .attr("y", height - 5)
+     .attr("y", height - 22)
      .attr("class", "xnames")
 
   // call x scale
@@ -242,16 +251,23 @@ function drawOpening(data) {
      .attr("class", "xaxis")
      .call(d3.axisBottom(x));
 
-  // draw the lines
-  // svg.append("path")
-  //    .datum(rateList)
-  //    .attr("class", "line")
-  //    .attr("d", line2)
+  var lineGroup = svg.append("g")
+                     .attr("class", "lineGroup")
 
-  svg.append("path")
-    .datum(names)
-    .attr("class", "line")
-    .attr("d", line);
+
+  dateList.forEach(function(d) {
+    // draw the lines
+    svg.append("path")
+       .datum(d)
+       .attr("class", "line")
+       .attr("d", line2)
+  })
+
+
+  // svg.append("path")
+  //   .datum(names)
+  //   .attr("class", "line")
+  //   .attr("d", line);
 
   // add selection borders
   var rects = svg.selectAll("rect")
@@ -260,9 +276,11 @@ function drawOpening(data) {
                  .append("rect");
 
   // draw selection panels over the line
-  rects.attr("x", function(d, i) { return xScale(i) })
+  rects.attr("x", function(d, i) { return x(startDates[i]) })
        .attr("y", margin.top)
-       .attr("width", (xScale(2) - xScale(1)))
+       .attr("width", function(d, i) {
+         return (x(startDates[i + 1]) - x(startDates[i]));
+       })
        .attr("height", height - 40)
        .attr("class", "panel")
        // display tooltip
@@ -307,8 +325,16 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
-          resizeOpening("small")
+          // resizeOpening("small")
        })
+}
+
+function getFirst(rateList) {
+  firsts = []
+  for (i in rateList) {
+    firsts.push(d3.min(rateList[i]))
+  }
+  return firsts
 }
 
 function resizeOpening(size) {
@@ -655,7 +681,7 @@ function getHeight(d) {
 
   // get the index at which the historical event is at
   i = bisectDate(points, d, 1)
-  console.log(i)
+
   d0 = points[i - 1]
   d1 = points[i]
 
