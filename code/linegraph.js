@@ -1167,7 +1167,7 @@ function drawHelpTip() {
   /* Draw an explanation box next to every visualisation*/
   idList = ["openingInfo", "individualInfo", "mapInfo"]
   infoList = ["A line chart with the approval rating of a president. Hover over the periods to see the average rating. Clicking a president shows their individual approval rating and electoral map.",
-              "This graph shows the approval rate of the selected president. Hover a point to view the rate and click a red bar to view the historical event.",
+              "This graph shows the approval rate of the selected president. Hover a point to view the rate and click a red bar to view the historical event. The stacked bars behind the line represent the number of seats in Congress, red for Republican blue for Democrate",
               "The map shows the winning party in each state for the selected election. click a state to see the statistics. Select another election (if any) from the drop down menu."]
 
   // draw the help icons and give them text
