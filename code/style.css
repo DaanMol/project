@@ -28,7 +28,7 @@ rect.panel {
 rect.sel {
     fill: blue;
     opacity: .1;
-    stroke: red;
+    stroke: black;
 }
 
 .mytooltip {
