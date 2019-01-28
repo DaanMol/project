@@ -193,7 +193,7 @@ function drawOpening(data) {
 
   // create x scale for the names
   var xScale = d3.scaleLinear()
-                 .domain(d3.extent(startDates))
+                 .domain([0, names.length])
                  .range([margin.left, width - margin.right]);
 
   // create yscale for approval rating
@@ -263,12 +263,6 @@ function drawOpening(data) {
        .attr("d", line2)
   })
 
-
-  // svg.append("path")
-  //   .datum(names)
-  //   .attr("class", "line")
-  //   .attr("d", line);
-
   // add selection borders
   var rects = svg.selectAll("rect")
                  .data(names)
@@ -279,7 +273,11 @@ function drawOpening(data) {
   rects.attr("x", function(d, i) { return x(startDates[i]) })
        .attr("y", margin.top)
        .attr("width", function(d, i) {
-         return (x(startDates[i + 1]) - x(startDates[i]));
+         if (i != startDates.length - 1) {
+           return (x(startDates[i + 1]) - x(startDates[i]));
+         } else {
+           return width - x(startDates[i])
+         }
        })
        .attr("height", height - 40)
        .attr("class", "panel")
