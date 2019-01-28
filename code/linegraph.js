@@ -992,9 +992,16 @@ function drawMap(userSelection, selected=false) {
 
   // remove old map
   svg3.selectAll("g")
-      .transition()
-      .duration(500)
+      // .transition()
+      // .duration(500)
       .remove();
+
+  svg3.append("g")
+      .append("text")
+      .attr("x", 700)
+      .attr('y', 50)
+      .text(pres)
+      .style("font-size", "30px")
 
   // import the topojson file
   d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
