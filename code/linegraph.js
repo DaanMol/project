@@ -239,7 +239,7 @@ function drawOpening(data) {
        return d
      })
      .attr("x", function(d, i) {
-       return x(startDates[i]) + 5
+       return x(startDates[i]) + 2
      })
      .attr("y", height - 22)
      .attr("class", "xnames");
@@ -737,7 +737,7 @@ function drawEvent(eventDate) {
       .attr("y", height4 - margin.bottom * 2)
       .attr("width", 100)
       .attr("height", 30)
-      .attr("class", "eventButton")
+      .attr("class", "eventButton") 
       .on("mouseover", function(d) {
         d3.select(this)
           .style("cursor", "pointer");
@@ -992,8 +992,6 @@ function drawMap(userSelection, selected=false) {
 
   // remove old map
   svg3.selectAll("g")
-      // .transition()
-      // .duration(500)
       .remove();
 
   svg3.append("g")
