@@ -111,3 +111,4 @@ for the individual timeline because that shows more than one dataset.
 Tuesday
 Reduced amount of global variables.
 Changed colors of other party states to match the color of the line above.
+Added a dropdown menu in the navbar for easy selection when scrolled down.
