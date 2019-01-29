@@ -1,8 +1,6 @@
 # The Presidential Cheatsheet
 Programmeerproject van Daan Molleman
 
-Github pages: https://DaanMol.github.io/project/index.html
-
 Het doel van dit project is het visualiseren van een tijdlijn met Amerikaanse presidentiële approval rates met klikbare punten in de lijn waar de approval rate stijgt of daalt die men doorverwijst naar een relevante website.
 
 Probleem: Vandaag de dag volgt iedereen de Amerikaanse politiek op de voet, met Trump die elke dag in het nieuws is, zij het positief of negatief. Er wordt dagelijks over gesproken en daarbij wordt dan 'de mening van het volk' genoemd. Maar hoe zit het nou daadwerkelijk met deze mening? Waar wordt deze door beïnvloed? Een belangrijk concept in de Amerikaanse politiek is de President Approval Rating, die aangeeft hoeveel procent van het volk vindt dat de president zijn baan goed uitvoert. 
@@ -44,11 +42,3 @@ Deze website visualiseert de approval rate van elke Amerikaanse president. Je ka
 * Het verzamelen van alle belangrijke gebeurtenissen en deze linken aan stijgingen of dalingen in de approval rate. Dit is erg veel handmatig werk en heeft weinig met programmeren te maken. 
 * Voor elke president belangrijke gebeurtenissen bekijken en categoriseren. Dit wordt vooral lastig gemaakt doordat een presidentiële handeling vaak niet van één categorie is maar van meerdere.
 * Voor elke categorie kijken wat voor invloed het heeft gehad. Bovendien is het nooit duidelijk of een bepaalde handeling de enige factor is die speelde bij een verandering in de approval rate. 
-
-extra interactief html element
-kaart van vs 
-electoral votes?
-gaten in data
-bar chart typen gebeurtenissen
-oorlogen vergelijken
-wikipedia dbp
