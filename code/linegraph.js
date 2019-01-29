@@ -22,14 +22,6 @@ titleText.append("h1").text("The Presidential cheatsheet")
 titleText.append("h2").text("Daan Molleman - 11275820")
 titleText.append("h3").text("The POTUS's approval rating from 1940 through 2018")
 
-d3.select("body").append("div")
-                 .style("position", "relative")
-                 .append("img")
-                 .attr("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png")
-                 .attr("width", "150")
-                 .attr("height", "150")
-                 .attr("class", "ribbon");
-
 var margin = {top: 20, right: 10, bottom: 20, left: 50};
 
 var width = 1500,
@@ -615,6 +607,9 @@ function drawDates(pres) {
   var approvalDates = Object.keys(approval);
   var svg2 = d3.select("#IndLine");
 
+  svg2.selectAll(".clickedDate")
+     .remove().exit()
+
   // draw the dots
   svg2.selectAll(".date")
      .remove().exit()
@@ -664,6 +659,11 @@ function drawDates(pres) {
      })
      .on("click", function(d) {
        drawEvent(events[d]);
+       svg2.selectAll(".clickedDate")
+           .attr("class", "date")
+
+       d3.select(this)
+         .attr("class", "clickedDate")
      });
 }
 

@@ -73,6 +73,11 @@ rect.sel {
     stroke: black;
 }
 
+.clickedDate {
+  fill: blue;
+  stroke: black;
+}
+
 .states {
   fill: pink;
   stroke: black;
