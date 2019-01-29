@@ -62,7 +62,7 @@ Added comments to new code
 # day 10
 Friday
 Fixed overlap in the stacked bar chart of congress seats. Had to do something
-with checking wheter they fell out of the graph.
+with checking whether they fell out of the graph.
 
 # day 11
 Monday
@@ -75,7 +75,7 @@ an online article.
 
 # day 12
 Tuesday
-Grouped multiple html elements for better readability and accessability.
+Grouped multiple html elements for better readability and accessibility.
 
 # day 12
 Wednesday
@@ -98,3 +98,16 @@ this did not look quite as I wanted to.
 Need to make the graphs scale with the computer screen.
 The points are now on the line in the individual chart. Thanks Jasper!
 Added about page with sources
+
+# day 15
+Monday
+The large timeline now shows proper data and the lines are separated.
+The panels are now the proper size.
+The page now scrolls down to the individual chart. This only happens for the
+overall timeline because that only shows one thing. The page does not scroll
+for the individual timeline because that shows more than one dataset.
+
+# day 16
+Tuesday
+Reduced amount of global variables.
+Changed colors of other party states to match the color of the line above.

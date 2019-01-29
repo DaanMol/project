@@ -104,6 +104,34 @@ function main() {
   drawPres(data);
   drawDates("Roosevelt");
   drawHelpTip();
+  navbarDrop();
+}
+
+function navbarDrop() {
+  /* draw a dropdown menu in the navbar*/
+
+  var navbar = d3.select("#navBar").append("div").attr("class", "selBox")
+
+  var selection = navbar.append("select")
+                        .attr("id", "navSelect")
+                        .attr('class', 'btn btn-outline-dark')
+                        .on("change", function() {
+                          let pres = d3.select("#navSelect").property("value")
+                          updatePres(pres);
+                          drawMap(getYears(pres));
+                          drawDrop(getYears(pres));
+                          if (typeof(state) !== "undefined") {
+                            updateTip(state, sel);
+                          }
+                        })
+
+  selection.selectAll("option")
+          .data(presidents)
+          .enter()
+          .append("option")
+          .attr("value", function(d) { return d; })
+          .text(function(d) { return d; })
+
 }
 
 function createScales() {

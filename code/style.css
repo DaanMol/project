@@ -9,6 +9,12 @@ h1, h2, h3 {
   text-align: center !important;
 }
 
+.selBox {
+  position: absolute;
+  right: 60px;
+  top: 10px;
+}
+
 .paragraph {
   width:600px;
   margin-left: auto;
