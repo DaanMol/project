@@ -110,12 +110,12 @@ rect.sel {
 }
 
 .other {
-  fill: yellow;
+  fill: #ffab00;
   stroke: black;
 }
 
 .othersel {
-  fill: orange;
+  fill: yellow;
   stroke: black;
   stroke-width: 2px;
 }
@@ -206,15 +206,15 @@ rect.eventButton:hover {
 
 #openingInfo {
   left: 1050px;
-  top: 225px;
+  top: 175px;
 }
 
 #individualInfo {
   left: 950px;
-  top: 600px;
+  top: 550px;
 }
 
 #mapInfo {
   left: 950px;
-  top: 975px;
+  top: 925px;
 }

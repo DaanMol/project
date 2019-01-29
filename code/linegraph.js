@@ -20,11 +20,6 @@ var titleText = d3.select("body").append("div")
 titleText.append("h1").text("The Presidential cheatsheet")
                       .attr("class", "head")
 titleText.append("h2").text("Daan Molleman - 11275820")
-titleText.append("p").text("Clickable timeperiods update the graph and the map below. \
-                                     Clicking a state will show the statistics for the \
-                                     selected elections. These are selectable in the\
-                                     dropdown menu.")
-                     .attr("class", "paragraph")
 titleText.append("h3").text("The POTUS's approval rating from 1940 through 2018")
 
 d3.select("body").append("div")
@@ -62,7 +57,8 @@ var individual = d3.selectAll("body")
 
 var svg2 = individual.append("svg")
               .attr("width", width2)
-              .attr("height", height2);
+              .attr("height", height2)
+              .attr("id", "IndLine");
 
 var svg3 = d3.selectAll("body")
              .append("div")
@@ -70,10 +66,12 @@ var svg3 = d3.selectAll("body")
              .append("svg")
               .attr("width", width3)
               .attr("height", height3)
+              .attr("id", "usamap");
 
 var svg4 = individual.append("svg")
                .attr("width", width4)
                .attr("height", height4)
+               .attr("id", "event");
 
 var myTool = d3.select("body")
                .append("div")
@@ -101,15 +99,19 @@ window.onload = function() {
     data4 = response[3]
     data5 = response[4]
 
-    formatDate(data);
-    formatDates(data5);
-    createScales();
-    drawCongress(formatYear(data2));
-    drawOpening(data);
-    drawPres(data);
-    drawDates("Roosevelt");
-    drawHelpTip();
+    main();
   });
+}
+
+function main() {
+  formatDate(data);
+  formatDates(data5);
+  createScales();
+  drawCongress(formatYear(data2));
+  drawOpening(data);
+  drawPres(data);
+  drawDates("Roosevelt");
+  drawHelpTip();
 }
 
 function createScales() {
@@ -213,6 +215,8 @@ function drawOpening(data) {
 
   // retrieve list of average rating for each president
   var points = average(data);
+
+  var svg = d3.select("#opening")
 
   // call y-axis ticks
   svg.append("g")
@@ -321,7 +325,7 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
-          window.scrollTo({ top: 510 });
+          window.scrollTo({ top: 460 });
        });
 }
 
@@ -417,6 +421,8 @@ function drawPres(data) {
     x.domain(d3.extent(original, function(d) { return selection[d]["Start"]; }));
     y.domain([0, 100]);
 
+    var svg2 = d3.select("#IndLine");
+
     // draw the line
     svg2.append("path")
         .data([original])
@@ -445,7 +451,7 @@ function drawPres(data) {
         .text("Approval rating in % and percentage of Congress seats in %");
 
     // add dots on line
-    dotGroup = svg2.append("g")
+    var dotGroup = svg2.append("g")
                    .attr("id", "dotGroup");
 
     dotGroup.selectAll(".dot")
@@ -537,12 +543,13 @@ function drawCongress(congressData) {
   /* Draw congress seats in the individual graph */
 
   // create scale for congress seats
-  yCon = d3.scaleLinear()
+  var yCon = d3.scaleLinear()
         .domain([0, 435])
         .range([height2 - margin.bottom, margin.top]);
 
   // group the bars
-  seats = svg2.append("g");
+  var svg2 = d3.select("#IndLine");
+  var seats = svg2.append("g");
 
   // draw the democrate bars
   var democrateSeats = seats.selectAll(".dembar")
@@ -606,6 +613,7 @@ function drawDates(pres) {
   var approval = data[pres];
   var eventDates = Object.keys(events);
   var approvalDates = Object.keys(approval);
+  var svg2 = d3.select("#IndLine");
 
   // draw the dots
   svg2.selectAll(".date")
@@ -692,6 +700,7 @@ function getHeight(d) {
 
 function drawEvent(eventDate) {
   /* Draw an image, title and link when a historical event is clicked */
+  var svg4 = d3.select("#event");
 
   svg4.selectAll(".dateImage")
       .remove();
@@ -737,7 +746,7 @@ function drawEvent(eventDate) {
       .attr("y", height4 - margin.bottom * 2)
       .attr("width", 100)
       .attr("height", 30)
-      .attr("class", "eventButton") 
+      .attr("class", "eventButton")
       .on("mouseover", function(d) {
         d3.select(this)
           .style("cursor", "pointer");
@@ -815,6 +824,8 @@ function updatePres(userInput) {
 
     // update the events
     drawDates(pres);
+
+    var svg2 = d3.select("#IndLine");
 
     // update the title
     svg2.selectAll(".indTitle")
@@ -990,6 +1001,8 @@ function drawMap(userSelection, selected=false) {
     sel = data3[userSelection];
   }
 
+  var svg3 = d3.select("#usamap");
+
   // remove old map
   svg3.selectAll("g")
       .remove();
@@ -1079,6 +1092,8 @@ function getClass(id, sel) {
 
 function drawTip() {
   /* draw the initial tip text */
+  var svg3 = d3.select("#usamap");
+
   svg3.selectAll("#wikitip")
       .remove();
   wiki = svg3.append("text")
@@ -1091,6 +1106,8 @@ function drawTip() {
 
 function updateTip(state, sel) {
   /* Update the tip displayed when a state is clicked */
+
+  var svg3 = d3.select("#usamap");
 
   // remove old tip
   svg3.selectAll("#wikitip")
