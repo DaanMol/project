@@ -41,3 +41,13 @@ Student nr: 11275820
 [Github Pages](https://daanmol.github.io/project/code/page.html "Github Pages")
 
 [License](../master/LICENSE)
+
+## Code Sources
+[Interpolating between dots. ](https://bl.ocks.org/alandunning/cfb7dcd7951826b9eacd54f0647f48d3)
+[Line graph. ](https://bl.ocks.org/gordlea/27370d1eea8464b04538e6d8ced39e89)
+[Topojson. ](https://github.com/topojson/topojson/wiki)
+[USA map](https://bl.ocks.org/mbostock/4090848)
+
+## Image sources
+[Top right image](https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png)
+[Historical images](https://www.wikepedia.org)
