@@ -125,6 +125,7 @@ function navbarDrop() {
                           }
                         })
 
+  // add the options to the drop down menu
   selection.selectAll("option")
           .data(presidents)
           .enter()
@@ -149,8 +150,8 @@ function createScales() {
 }
 
 function formatDate(data) {
-  /* Formats the date to d3 date */
-  // format the dates
+  /* Formats the date of approval ratings to d3 date */
+  // format the dates month/day/year
   var parseTime = d3.timeParse("%m/%d/%Y");
 
   for (name in data) {
@@ -162,6 +163,8 @@ function formatDate(data) {
 }
 
 function formatDates(data) {
+  /* Formats the date of the historical events to d3 date */
+
   var parseTime = d3.timeParse("%m/%d/%Y");
 
   for (name in data) {
@@ -189,11 +192,14 @@ function formatYear(data2) {
 }
 
 function drawOpening(data) {
+  /* Draws the overall timeline */
+
+  // get the names of the presidents
   var names = Object.keys(data);
 
-  var dateList = [];
-  var rateList = [];
-  var allDates = [];
+  var dateList = [];    // list of lists with dates for each president
+  var rateList = [];    // list of lists with ratings for each president
+  var allDates = [];    // list of all the dates used for the scale
 
   names.forEach(function(i) {
     var dates = [];
@@ -207,16 +213,12 @@ function drawOpening(data) {
     rateList.push(rates);
   })
 
-  startDates = getFirst(rateList);
+  var startDates = getFirst(rateList);
 
+  // create an x scale based on all the dates
   var x = d3.scaleTime()
             .domain(d3.extent(allDates))
             .range([margin.left, width - margin.right]);
-
-  // create x scale for the names
-  var xScale = d3.scaleLinear()
-                 .domain([0, names.length])
-                 .range([margin.left, width - margin.right]);
 
   // create yscale for approval rating
   var yScale = d3.scaleLinear()
@@ -224,11 +226,6 @@ function drawOpening(data) {
                  .range([height - margin.bottom, 0 + margin.top]);
 
   // create line function
-  var line = d3.line()
-               .x(function(d, i) { return xScale(i) + ((xScale(2) - xScale(1))/2); })
-               .y(function(d) { return yScale(points[d]); })
-               .curve(d3.curveMonotoneX);
-
   var line2 = d3.line()
                 .x(function(d, i) { return x(d.Start); })
                 .y(function(d, i) { return yScale(d.Approving); });
@@ -255,7 +252,8 @@ function drawOpening(data) {
       .text("Approval rating in %");
 
   // draw x-axis labels
-  svg.selectAll("label")
+  svg.append("g").attr("class", "xlabels")
+    .selectAll("label")
      .data(names)
      .enter()
      .append("text")
@@ -277,16 +275,19 @@ function drawOpening(data) {
   var lineGroup = svg.append("g")
                      .attr("class", "lineGroup");
 
+  // add a separate line for each of the presidents
   dateList.forEach(function(d) {
     // draw the lines
-    svg.append("path")
+    lineGroup.append("path")
        .datum(d)
        .attr("class", "line")
        .attr("d", line2)
   });
 
   // add selection borders
-  var rects = svg.selectAll("rect")
+  var panelGroup = svg.append("g").attr("class", "panelGroup")
+
+  var rects = panelGroup.selectAll("rect")
                  .data(names)
                  .enter()
                  .append("rect");
@@ -345,80 +346,18 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
+          // scroll to the individual graph when clicked
           window.scrollTo({ top: 460 });
        });
 }
 
 function getFirst(rateList) {
+  /* Get the first date for each president */
   firsts = [];
   for (i in rateList) {
     firsts.push(d3.min(rateList[i]));
   }
   return firsts;
-}
-
-function resizeOpening(size) {
-
-  // assign selected heights
-  if (size === "small") {
-    var newHeight = height / 2;
-  }
-
-  // halve the openings height
-  d3.selectAll("#opening")
-    .transition()
-    .duration(700)
-    .attr("height", newHeight);
-
-  var names = Object.keys(data);
-
-  // create x scale for the names
-  var xScale = d3.scaleLinear()
-                 .domain([0, names.length])
-                 .range([margin.left, width - margin.right]);
-
-  // create yscale for approval rating
-  var yScale = d3.scaleLinear()
-                 .domain([0, 100])
-                 .range([newHeight - margin.bottom, 0 + margin.top]);
-
-  // create line function
-  var line = d3.line()
-               .x(function(d, i) { return xScale(i) + ((xScale(2) - xScale(1))/2); })
-               .y(function(d) { return yScale(points[d]); })
-               .curve(d3.curveMonotoneX);
-
-  // retrieve list of average rating for each president
-  var points = average(data);
-
-  // resize the line
-  svg.selectAll(".line")
-     .data([names])
-     .transition()
-     .duration(700)
-     .attr("d", line);
-
-  // resize panels
-  svg.selectAll(".panel")
-     .transition()
-     .duration(700)
-     .attr("height", newHeight - 40);
-
-  // relocate the axes
-  svg.selectAll(".xnames")
-     .transition()
-     .duration(700)
-     .attr("y", newHeight - 5);
-
-  svg.selectAll(".yaxis")
-     .transition()
-     .duration(700)
-     .call(d3.axisLeft(yScale));
-
-  svg.selectAll(".ylabel")
-     .transition()
-     .duration(700)
-     .attr("x", 0 - (newHeight / 2));
 }
 
 function drawPres(data) {
@@ -432,7 +371,7 @@ function drawPres(data) {
     // create the y scale for rating and x scale for dates
     x = d3.scaleTime().range([margin.left, width2 - margin.right]);
     y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
-    valueline = d3.line()
+    var valueline = d3.line()
                   .x(function(d) { return x(selection[d]["Start"]); })
                   .y(function(d) { return y(selection[d]["Approving"]); });
 
@@ -569,7 +508,7 @@ function drawCongress(congressData) {
 
   // group the bars
   var svg2 = d3.select("#IndLine");
-  var seats = svg2.append("g");
+  var seats = svg2.append("g").attr("class", "seats");
 
   // draw the democrate bars
   var democrateSeats = seats.selectAll(".dembar")
@@ -599,47 +538,51 @@ function drawCongress(congressData) {
        })
        .attr("class", "dembar");
 
-    // draw the republican bars
-    var republicanSeats = seats.selectAll(".repbar")
-                    .data(congressData)
-                    .enter()
-                    .append("rect");
+  // draw the republican bars
+  var republicanSeats = seats.selectAll(".repbar")
+                  .data(congressData)
+                  .enter()
+                  .append("rect");
 
-    republicanSeats.data(congressData)
-         .attr("x", function(d) {
-           if (x(d.date) > margin.left) {
-             return x(d.date);
-           } else {
-             return margin.left;
-           }
-         })
-         .attr("y", margin.top)
-         .attr("width", function(d) {
-           var congressYears = d3.timeYear.offset(d.date, 2);
-           if (x(d.date) > 0) {
-             return (x(congressYears) - x(d.date));
-           } else {
-             return (x(congressYears) - margin.left);
-           }
-         })
-         .attr("height", function(d) {
-           return yCon(d.Democrats) - margin.top;
-         })
-         .attr("class", "repbar");
+  republicanSeats.data(congressData)
+       .attr("x", function(d) {
+         if (x(d.date) > margin.left) {
+           return x(d.date);
+         } else {
+           return margin.left;
+         }
+       })
+       .attr("y", margin.top)
+       .attr("width", function(d) {
+         var congressYears = d3.timeYear.offset(d.date, 2);
+         if (x(d.date) > 0) {
+           return (x(congressYears) - x(d.date));
+         } else {
+           return (x(congressYears) - margin.left);
+         }
+       })
+       .attr("height", function(d) {
+         return yCon(d.Democrats) - margin.top;
+       })
+       .attr("class", "repbar");
 }
 
 function drawDates(pres) {
+  /* Draw dots on the individual line for historical events */
+
   var events = data5[pres];
   var approval = data[pres];
   var eventDates = Object.keys(events);
   var approvalDates = Object.keys(approval);
   var svg2 = d3.select("#IndLine");
 
-  svg2.selectAll(".clickedDate")
+  // remove old dots (if any)
+  svg2.selectAll(".eventGroup")
      .remove().exit()
 
   // draw the dots
-  svg2.selectAll(".date")
+  svg2.append("g").attr("class", "eventGroup")
+    .selectAll(".date")
      .remove().exit()
      .data(eventDates)
      .enter()
@@ -686,6 +629,7 @@ function drawDates(pres) {
             .style("display", "none")
      })
      .on("click", function(d) {
+       // draw the picture and link
        drawEvent(events[d]);
        svg2.selectAll(".clickedDate")
            .attr("class", "date")
@@ -696,62 +640,61 @@ function drawDates(pres) {
 }
 
 function getHeight(d) {
-  selection = data[pres];
-  points = [];
+  /* Interpolate between two dots to place the
+   * event dot on the right height
+   */
+  var selection = data[pres];
+  var points = [];
 
   // get a list of the presidents data
   for (i in selection) {
     points.push(selection[i]);
   }
-  points = points.reverse();
+  var points = points.reverse();
 
   // get the x of the historical evnet
-  x0 = x(d);
+  var x0 = x(d);
 
   // declare bisecor function
-  bisectDate = d3.bisector(function(d) { return d.Start; }).left;
+  var bisectDate = d3.bisector(function(d) { return d.Start; }).left;
 
   // get the index at which the historical event is at
-  i = bisectDate(points, d, 1);
+  var i = bisectDate(points, d, 1);
 
-  d0 = points[i - 1];
-  d1 = points[i];
+  var d0 = points[i - 1];
+  var d1 = points[i];
 
   if (i >= points.length) {
     return y(d0.Approving);
   }
 
-  yHist = y(d0.Approving) + (((x0 - x(d0.Start)) / (x(d1.Start) - x(d0.Start)))
-          * (y(d1.Approving) - y(d0.Approving)));
-  return yHist;
+  // creat the linear function and return the y, given the x
+  return (y(d0.Approving) + (((x0 - x(d0.Start)) / (x(d1.Start) - x(d0.Start)))
+          * (y(d1.Approving) - y(d0.Approving))));
 }
 
 function drawEvent(eventDate) {
   /* Draw an image, title and link when a historical event is clicked */
   var svg4 = d3.select("#event");
 
-  svg4.selectAll(".dateImage")
+  // remove old tip
+  svg4.selectAll(".tipGroup")
       .remove();
-  svg4.selectAll(".dateText")
-      .remove();
-  svg4.selectAll(".dateLink")
-      .remove();
-  svg4.selectAll(".eventButton")
-      .remove();
-  svg4.selectAll(".eventLinkText")
-      .remove();
+
+  // add group for easier selection and html readability
+  var tipGroup = svg4.append("g").attr("class", "tipGroup")
 
   // add the corresponding image
-  var imgs = svg4.append("image")
-                .attr("xlink:href", eventDate["Image"])
-                .attr("y", margin.top)
-                .attr("x", margin.left)
-                .attr("width", "300")
-                .attr("height", "300")
-                .attr("class", "dateImage");
+  tipGroup.append("image")
+      .attr("xlink:href", eventDate["Image"])
+      .attr("y", margin.top)
+      .attr("x", margin.left)
+      .attr("width", "300")
+      .attr("height", "300")
+      .attr("class", "dateImage");
 
   // add the title text
-  svg4.append("text")
+  tipGroup.append("text")
       .attr("x", margin.left)
       .attr("y", 330 + margin.top)
       .attr("class", "dateText")
@@ -766,7 +709,7 @@ function drawEvent(eventDate) {
       .text("Online article");
 
   // add button for online article
-  svg4.append("a")
+  tipGroup.append("a")
       .attr("xlink:href", eventDate["Link"])
       .attr("target", "_blank")
       .append("rect")
@@ -838,11 +781,11 @@ function updatePres(userInput) {
     // assign scales and line functions
     x = d3.scaleTime().range([margin.left, width2 - margin.right]);
     y = d3.scaleLinear().range([height2 - margin.bottom, margin.top]);
-    valueline = d3.line()
+    var valueline = d3.line()
                       .x(function(d) { return x(selection[d]["Start"]); })
                       .y(function(d) { return y(selection[d]["Approving"]); });
 
-    yCon = d3.scaleLinear()
+    var yCon = d3.scaleLinear()
           .domain([0, 435])
           .range([height2 - margin.bottom, margin.top]);
 
@@ -942,9 +885,6 @@ function updatePres(userInput) {
             return (x(congressYears) - margin.left);
           }
         })
-        .attr("height", function(d) {
-          return height2 - yCon(d.Democrats) - margin.top;
-        });
 
     // update the republican seats
     svg2.selectAll(".repbar")
@@ -966,9 +906,6 @@ function updatePres(userInput) {
             return (x(congressYears) - margin.left);
           }
         })
-        .attr("height", function(d) {
-          return yCon(d.Democrats) - margin.top;
-        });
 }
 
 function drawDrop(years) {
@@ -1035,7 +972,7 @@ function drawMap(userSelection, selected=false) {
   svg3.selectAll("g")
       .remove();
 
-  svg3.append("g")
+  svg3.append("g").attr("class", "mapTitle")
       .append("text")
       .attr("x", 700)
       .attr('y', 50)
@@ -1045,7 +982,8 @@ function drawMap(userSelection, selected=false) {
   // import the topojson file
   d3.json("https://d3js.org/us-10m.v1.json").then(function(us) {
 
-    svg3.append("g")
+    // draw the map
+    svg3.append("g").attr("class", "usaMap")
       .selectAll("path")
       .data(topojson.feature(us, us.objects.states).features)
       .enter().append("path")
@@ -1124,12 +1062,12 @@ function drawTip() {
 
   svg3.selectAll("#wikitip")
       .remove();
-  wiki = svg3.append("text")
-             .attr("x", 1000)
-             .attr("y", 100)
-             .attr("id", "wikitip")
-             .text("Click on a state for more information")
-             .style("font-size", "12px");
+  var wiki = svg3.append("text")
+                 .attr("x", 1000)
+                 .attr("y", 100)
+                 .attr("id", "wikitip")
+                 .text("Click on a state for more information")
+                 .style("font-size", "12px");
 }
 
 function updateTip(state, sel) {
@@ -1163,12 +1101,12 @@ function updateTip(state, sel) {
 
   // state name above table
   svg3.append("text")
-             .attr("x", 1000)
-             .attr("y", 90)
-             .attr("id", "wikitip")
-             .attr("class", "statTitle")
-             .text(state)
-             .style("font-size", "15px");
+       .attr("x", 1000)
+       .attr("y", 90)
+       .attr("id", "wikitip")
+       .attr("class", "statTitle")
+       .text(state)
+       .style("font-size", "15px");
 
   // import foreign object into html
   var table = svg3.append("foreignObject")
