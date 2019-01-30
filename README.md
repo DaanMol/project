@@ -51,3 +51,4 @@ Student nr: 11275820
 ## Image sources
 [Top right image](https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg/1200px-Seal_of_the_Executive_Office_of_the_President_of_the_United_States_2014.svg.png)
 [Historical images](https://www.wikepedia.org)
+[Favicon](https://cdn2.iconfinder.com/data/icons/places1/24/White-House-512.png)
