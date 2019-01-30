@@ -346,6 +346,7 @@ function drawOpening(data) {
           if (typeof(state) != "undefined") {
             updateTip(state, sel)
           }
+          d3.select("#navSelect").property("value", pres)
           // scroll to the individual graph when clicked
           window.scrollTo({ top: 460 });
        });
@@ -475,6 +476,7 @@ function drawPres(data) {
                             if (typeof(state) !== "undefined") {
                               updateTip(state, sel);
                             }
+                            d3.select("#navSelect").property("value", pres)
                           })
 
     // add button to go left
@@ -495,6 +497,7 @@ function drawPres(data) {
                            if (typeof(state) !== "undefined") {
                              updateTip(state, sel);
                            }
+                           d3.select("#navSelect").property("value", pres)
                          });
 }
 
