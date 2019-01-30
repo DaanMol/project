@@ -1,4 +1,4 @@
-# [The Presidential Cheatsheet](https://daanmol.github.io/project/code/page.html "Github Pages")
+# [The Presidential Cheatsheet](https://daanmol.github.io/project/code/opening.html "Github Pages")
 An overview of the people's opinion on the highest seat in the USA
 
 ## The Grand Timeline
