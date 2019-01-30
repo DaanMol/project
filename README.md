@@ -21,7 +21,7 @@ that might have influenced the approval rating of the president.
 These dots are clickable, and when interacted with, a relevant image pops up, and a button 
 linking to a corresponding online article regarding the event. 
 
-![Historical event](https://github.com/DaanMol/project/blob/master/doc/History.png)
+<img src="https://github.com/DaanMol/project/blob/master/doc/History.png" width="400"/>
 
 ## The Division
 Additionally, when a president is selected in the overall timeline, or when another president
