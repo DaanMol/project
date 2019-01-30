@@ -85,8 +85,8 @@ rect.sel {
 }
 
 .states {
-  fill: pink;
-  stroke: black;
+  fill: none;
+  stroke: none;
 }
 
 .state-borders {
