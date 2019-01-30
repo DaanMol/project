@@ -112,3 +112,8 @@ Tuesday
 Reduced amount of global variables.
 Changed colors of other party states to match the color of the line above.
 Added a dropdown menu in the navbar for easy selection when scrolled down.
+
+# day 17
+Wednesday
+Added comments, formatted code, cleaned code, cleaned html.
+The dropdown menu now updates with other selection tools.
