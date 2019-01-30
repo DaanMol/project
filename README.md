@@ -42,6 +42,8 @@ Student nr: 11275820
 
 [License](../master/LICENSE)
 
+The sources stated below each have their own licenses.
+
 ## Code Sources
 [Interpolating between dots. ](https://bl.ocks.org/alandunning/cfb7dcd7951826b9eacd54f0647f48d3)
 [Line graph. ](https://bl.ocks.org/gordlea/27370d1eea8464b04538e6d8ced39e89)
