@@ -1,4 +1,4 @@
-# The Presidential Cheatsheet
+# [The Presidential Cheatsheet](https://daanmol.github.io/project/code/page.html "Github Pages")
 An overview of the people's opinion on the highest seat in the USA
 
 ## The Grand Timeline
@@ -21,7 +21,7 @@ that might have influenced the approval rating of the president.
 These dots are clickable, and when interacted with, a relevant image pops up, and a button 
 linking to a corresponding online article regarding the event. 
 
-![Historical event](https://github.com/DaanMol/project/blob/master/doc/History.png)
+<img src="https://github.com/DaanMol/project/blob/master/doc/History.png" width="400"/>
 
 ## The Division
 Additionally, when a president is selected in the overall timeline, or when another president
@@ -41,6 +41,8 @@ Student nr: 11275820
 [Github Pages](https://daanmol.github.io/project/code/page.html "Github Pages")
 
 [License](../master/LICENSE)
+
+The sources stated below each have their own licenses.
 
 ## Code Sources
 [Interpolating between dots. ](https://bl.ocks.org/alandunning/cfb7dcd7951826b9eacd54f0647f48d3)
