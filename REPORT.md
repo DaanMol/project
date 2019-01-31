@@ -1,50 +1,52 @@
 # Final Report
 
-The web application presents the user with an insight into the approval rating
-of the President of the United States of America from 1940 until 2018.
-An overall timeline shows the progression of the approval rate over all the 78
-years, and clicking a segment of that graph will generate an individual timeline
-for a single president, while also displaying the division of seats in the
-house of Congress. Historical events are plotted on the individual line, giving
-an idea of the influence they may have had on the approval rate. When clicked,
-an image of the event appears with a clickable link to an online article.
-Lastly, a map of the elections is shown, visualising the distribution of votes
-between states. Clicking a state will show its statistics and if a president
-had more than one election, it is selectable through a dropdown menu.
+The web application presents the user with an insight into the approval rating of the President of the United States of America from 1940 until 2018. An overall timeline shows the progression of the approval rate over all the 78 years, and clicking a segment of that graph will generate an individual timeline for a single president, while also displaying the division of seats in the house of Congress. Historical events are plotted on the individual line, giving an idea of the influence they may have had on the approval rate. When clicked,
+an image of the event appears with a clickable link to an online article. Lastly, a map of the elections is shown, visualising the distribution of votes between states. Clicking a state will show its statistics and if a president had more than one election, it is selectable through a dropdown menu.
 
 [Single Screenshot](https://github.com/DaanMol/project/blob/master/doc/total.png)
 
 ## Technical design
-The code is structured in functions, with one main function that loads the
-parts of the page that need to be there when it loads. When the page loads,
-all the datasets are promised and loaded into variables, then, the data is used
-in the main function to draw the initial visual components. These include the
-overall timeline and the individual timeline for president Roosevelt, since he
-was the president in 1940.
+The code is structured in functions, with one main function that loads the parts of the page that need to be there when it loads. When the page loads, all the datasets are promised and loaded into variables, then, the data is used in the main function to draw the initial visual components. These include the overall timeline and the individual timeline for president Roosevelt, since he was the president in 1940.
 
-The data consists of 5 json files and one topojson file. The largest file is
-presidents.json, containing dates with approval rates for each president.
-Congress.json contains data about the seat division in the house of Congress.
-Votes.json provides data of the amount of votes and electoral votes in each
-American state, making it possible to colour in the map. Codes.json is a file
-that decyphers the ANSI state codes to their actual names and vice versa. The
-dates.json file contains a date, an image, a title and a link for each
-historical event. Finally the file to draw the states is retrieved from a link
-to a topojson file.
+The data consists of 5 json files and one topojson file. The largest file is presidents.json, containing dates with approval rates for each president. Congress.json contains data about the seat division in the house of Congress. Votes.json provides data of the amount of votes and electoral votes in each American state, making it possible to colour in the map. Codes.json is a file that decyphers the ANSI state codes to their actual names and vice versa. The dates.json file contains a date, an image, a title and a link for each
+historical event. Finally the file to draw the states is retrieved from a link to a topojson file online.
 
-Before anything is drawn, the formats of the data need some small adjustments.
-Most of which are converting the generally used mm/dd/yyyy format to a
-Javascript date format. This happens in the functions: formatDate, formatDates,
-formatYear. Furthermore, for the stacked bar chart representing the seats in
-congress not to overlap the individual line, it has to be drawn first using
-the date scale from presidents.json. The scale is constructed using the dates
-from the approval rate, and the congress years are drawn using their dates on
-the scale created earlier. The drawOpening function draws the overall timeline
-with its selection panels, that change the individual timeline when clicked.
+Before anything is drawn, the formats of the data need some small adjustments. Most of which are converting the generally used mm/dd/yyyy format to a Javascript date format. This happens in the functions: formatDate, formatDates, formatYear. Furthermore, for the stacked bar chart representing the seats in congress not to overlap the individual line, it has to be drawn first using the date scale from presidents.json. The scale is constructed using the dates from the approval rate, and the congress years are drawn using their dates on the scale created earlier. The drawOpening function draws the overall timeline with its selection panels, that change the individual timeline when clicked.
 
-The individual graph is drawn with drawPres and initially shows Roosevelts data.
-With the selection of another president, the scales are updated and the line
-adjusts accordingly, along with the historical points and the seats in congress.
-At the same time the map is updated using drawMap, loading in the map and
-assigning a colour to each state representing the party that received the most
-votes. 
+The individual graph is drawn with drawPres and initially shows Roosevelts data. With the selection of another president, the scales are updated and the line adjusts accordingly, along with the historical points and the seats in congress. At the same time the map is updated using drawMap, loading in the map and assigning a colour to each state representing the party that received the most votes.
+
+When an event is clicked in the individual graph, the drawEvent function is called, displaying the corresponding image, title and link to an online article.
+
+When a state is clicked in the map of the USA, the updateTip function is called, updating the table with the state's statistics.
+
+Additionally, when a president is selected through the dropdown menu in thenavigation bar, when a president is clicked in the overall timeline or when the user navigates presidents using the buttons in the individual graph, the following functions are called. Firstly the updatePres function, that updates the individual graph, next the drawMap function is called again, updating both the map and the tooltip, retaining the selected state and updating its statistics. If no state is currently selected, the updateTip does not get called. The dropdown menu for the election years is adjusted properly with the drawDrop function.
+
+The little question marks next to each graph are drawn last using drawHelpTip.
+
+## Challenges
+The very first challenge I have encountered was formatting the data to a usable format. This was done using python and the CSV dictreader. I put a lot of effort in this, since I found it to be more efficient to format all the data in one python script, rather than use Javascript to format the data. This saved me a lot of headaches along the way.
+
+The next challenge that crossed my path was creating the overall timeline of the president's approval rating. I doubted between showing only the average of each president, resulting in an easy writable function, or creating a line that represented the actual detailed data. In the first two weeks I went with the average score, which meant I could move on to the other parts of my visualisation and deliver a good looking prototype and alpha version. It was in the third week I decided to create the line that is in the current version, which contains the actual data of the approval rate. I decided to do this because in this manner, the user was actually able to see the differences between the presidents in one picture. This was easier said than done, since properly formatting the dates was a tough job and even then, the dates in the dataset were in reverse order for some reason. Additionally, I strived to get a separate line for each president, as the approval rates for each president had nothing to do with their predecessor or successor. This meant having to create a scale for 1940 to 2018, while looping over each president's date and drawing their line.
+
+In the initial form of the overall timeline, the selection panels for the presidents were easily drawn, since I made the with of each president the same size. When the decision was made to properly display the data however, the panels had to be resized, as most presidents  were not president for the same period of time. Some were only president for 4 years, other for 8 years. Adjusting the selection panels meant drawing rectangles from the first day in office to the last day.
+
+The next challenger rose when I attempted to create a map of the USA. At first I tried to use the DataMaps library, which was recommended to us in an earlier assignment. Somehow this did not work out for me, leaving me mapless and made me search the web for another solution. I found one using topojson and managed to get a map loaded in. The states were not assigned their names, but were given ID's using the ANSI format, which I only found out about by accident, stumbling across the answer on some forum.
+
+The next problem was a small one, but not insignificant. When president Ford was selected, the map would disappear, since he was never elected. I chose to black out the map and present the user with an error message if Ford was selected.
+
+One and a half weeks in, I felt something was missing, so I decided to include the division of seats in the house of Congress in the individual line graph. The data was easily retrieved. The first challenge was formatting the yyyy format to the Javascript date, making it possible for it to use the scale that was created for the president. Next up was placing the bars at the right position in the graph, which was more difficult than I had expected. My vison was to draw all the bars, and make them slide into the graph when another president was selected. This meant that all the bars had to be present simultaneously. Though when the graph was updated, the graphs overlapped and intersected with the y axis. To adjust this I had to state that when the X of a bar was left of the y-axis, the X had to be the left margin, and the width had to be the start of the next bar. The most right bar had to be cut off to prevent it from being too wide.
+
+When all these problems were resolved, I noticed that the bars were in front of the navigation buttons I created earlier. To solve this problem, the bars had to be drawn before the buttons, but the bars relied on the x-axis belonging to the president's dates. So the scales must be created before the congress bars were drawn.
+
+My next objective was to get the historical events on the individual line chart. Importing and creating the dots was quickly done, but getting them on the right height was significantly trickier, as the events did not come with a corresponding approval rate to determine the height. A quick solution was to make the historical dates a rectangle that spanned from top to bottom in the graph. This, however, looked hideous and I decided to go the extra mile and attempted to get the dots on the right y position. With some help from Jasper I was able to determine the position of the dots left and right from the event, making it possible to interpolate a linear function and placing the historical event on the right height.
+
+At first I had the idea to make the overall timeline shrink when a president was clicked for a cool effect, though it did not have any other functionality than being cool. Thus I decided to keep it the same size.
+
+For a visual effect I deemed it useful to make the page scroll down to the individual graph when a president was selected in the overall graph. I thought about doing the same for the individual graph: making the page scroll down to the map when a president was selected using the navigation buttons, but this proved to be more annoying than useful, because a user might want to scroll through all the presidents in the individual graph, without being pulled down to the map each time.
+
+Lastly I decided to add a dropdown menu in the navigation bar, making it easier to select a president when the user is all scrolled down to the map, instead of having to use the buttons in the individual graph or click a president in the overall graph at the top of the page.
+
+## Trade-offs
+When coming up with the concept of my web application, I wanted to show the influence each presidential decision had on the approval rating, categorising each decision. First of all, most of the presidential decisions are quite boring for the average user, and most of them do not even ring a bell because they are domestic. I chose to go with historical events because they have more historical significance than presidential decisions. I also chose not to categorise the events, as this would be a) too much work, and b) a lot of events would fall into the same category, since most of them relate to international relations and war. A function that would have made the cut if I had more time was the influence of the events on the approval rate. An option could be to select the timeframe of the influence, so see if the historical event had a direct impact, or that the change would occur more gradually over time.
+
+Another aspect that I have omitted is the effect of the approval rating on the seats in the house of Congress.
