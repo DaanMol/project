@@ -3,7 +3,7 @@
 The web application presents the user with an insight into the approval rating of the President of the United States of America from 1940 until 2018. An overall timeline shows the progression of the approval rate over all the 78 years, and clicking a segment of that graph will generate an individual timeline for a single president, while also displaying the division of seats in the house of Congress. Historical events are plotted on the individual line, giving an idea of the influence they may have had on the approval rate. When clicked,
 an image of the event appears with a clickable link to an online article. Lastly, a map of the elections is shown, visualising the distribution of votes between states. Clicking a state will show its statistics and if a president had more than one election, it is selectable through a dropdown menu.
 
-[Single Screenshot](https://github.com/DaanMol/project/blob/master/doc/total.png)
+![Single Screenshot](https://github.com/DaanMol/project/blob/master/doc/total.png)
 
 ## Technical design
 The code is structured in functions, with one main function that loads the parts of the page that need to be there when it loads. When the page loads, all the datasets are promised and loaded into variables, then, the data is used in the main function to draw the initial visual components. These include the overall timeline and the individual timeline for president Roosevelt, since he was the president in 1940.
